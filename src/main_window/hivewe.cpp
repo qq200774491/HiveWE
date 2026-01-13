@@ -44,7 +44,22 @@ HiveWE::HiveWE(QWidget* parent)
 	fs::path directory = find_warcraft_directory();
 
 	QSettings settings;
-	while (!hierarchy.open_game_data(directory)) {
+	while (true) {
+		if (hierarchy.open_game_data(directory)) {
+			const bool has_common = hierarchy.file_exists("scripts/common.j");
+			const bool has_blizzard = hierarchy.file_exists("scripts/blizzard.j");
+			if (has_common && has_blizzard) {
+				break;
+			}
+		}
+
+		QMessageBox::warning(
+			this,
+			"选择魔兽目录",
+			"未找到 1.27 经典版数据（scripts/common.j / scripts/blizzard.j）。\n"
+			"请选择正确的 Warcraft III 安装目录（包含 War3.mpq 等 MPQ 文件）。"
+		);
+
 		directory = QFileDialog::getExistingDirectory(this, "选择魔兽目录", "/home", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks).toStdWString();
 		if (directory == "") {
 			exit(EXIT_SUCCESS);
