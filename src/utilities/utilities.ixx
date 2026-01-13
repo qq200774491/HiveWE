@@ -116,7 +116,8 @@ export auto read_file(const fs::path& path) -> std::expected<BinaryReader, std::
 	std::ifstream stream(path, std::ios::binary);
 	if (stream) {
 		return BinaryReader(
-			std::vector<u8, default_init_allocator<u8>>(std::istreambuf_iterator(stream), std::istreambuf_iterator<char>())
+			std::vector<u8, default_init_allocator<u8>>(std::istreambuf_iterator(stream), std::istreambuf_iterator<char>()),
+			path.string()
 		);
 	} else {
 		return std::unexpected("Unable to open file");

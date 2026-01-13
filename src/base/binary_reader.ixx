@@ -8,9 +8,10 @@ export class BinaryReader {
   public:
 	std::vector<u8, default_init_allocator<u8>> buffer;
 	unsigned long long int position = 0;
+	std::string source;
 
-	explicit BinaryReader(std::vector<u8, default_init_allocator<u8>> buffer)
-		: buffer(std::move(buffer)) {
+	explicit BinaryReader(std::vector<u8, default_init_allocator<u8>> buffer, std::string source = {})
+		: buffer(std::move(buffer)), source(std::move(source)) {
 	}
 
 	template <typename T>
@@ -18,7 +19,10 @@ export class BinaryReader {
 		static_assert(std::is_trivial_v<T>, "T must be of trivial type.");
 
 		if (position + sizeof(T) > buffer.size()) {
-			throw std::out_of_range("Trying to read out of range of buffer");
+			throw std::out_of_range(std::format(
+				"Trying to read out of range of buffer (source={}, pos={}, size={}, need={})",
+				source, position, buffer.size(), sizeof(T)
+			));
 		}
 
 		T result;
@@ -30,7 +34,10 @@ export class BinaryReader {
 
 	[[nodiscard]] std::string read_string(const size_t size) {
 		if (position + size > buffer.size()) {
-			throw std::out_of_range("Trying to read out of range of buffer");
+			throw std::out_of_range(std::format(
+				"Trying to read out of range of buffer (source={}, pos={}, size={}, need={})",
+				source, position, buffer.size(), size
+			));
 		}
 
 		std::string result;
@@ -50,7 +57,10 @@ export class BinaryReader {
 		position += string.size() + 1;
 
 		if (position > buffer.size()) {
-			throw std::out_of_range("Trying to read out of range of buffer");
+			throw std::out_of_range(std::format(
+				"Trying to read out of range of buffer (source={}, pos={}, size={})",
+				source, position, buffer.size()
+			));
 		}
 
 		return string;
@@ -61,7 +71,10 @@ export class BinaryReader {
 		static_assert(std::is_trivial_v<T>, "T must be of trivial type.");
 
 		if (position + sizeof(T) * size > buffer.size()) {
-			throw std::out_of_range("Trying to read out of range of buffer");
+			throw std::out_of_range(std::format(
+				"Trying to read out of range of buffer (source={}, pos={}, size={}, need={})",
+				source, position, buffer.size(), sizeof(T) * size
+			));
 		}
 		std::vector<T> result(reinterpret_cast<T*>(&buffer[position]), reinterpret_cast<T*>(&buffer[position]) + size);
 		position += sizeof(T) * size;
@@ -74,7 +87,10 @@ export class BinaryReader {
 
 	void advance(const size_t amount) {
 		if (position + amount > buffer.size()) {
-			throw std::out_of_range("Trying to advance past the end of the buffer");
+			throw std::out_of_range(std::format(
+				"Trying to advance past the end of the buffer (source={}, pos={}, size={}, need={})",
+				source, position, buffer.size(), amount
+			));
 		}
 		position += amount;
 	}

@@ -71,7 +71,7 @@ namespace casc {
 			if (!success) {
 				return std::unexpected(std::format("Error failed to read file: {}\n", GetCascError()));
 			}
-			return BinaryReader(buffer);
+			return BinaryReader(buffer, path.string());
 		}
 
 		bool file_exists(const fs::path& path) const {

@@ -353,7 +353,7 @@ void HiveWE::load_folder() {
 	delete loading_box;
 
 	map->render_manager.resize_framebuffers(ui.widget->width(), ui.widget->height());
-	setWindowTitle("HiveWE 0.10 - " + QString::fromStdString(map->filesystem_path.string()));
+	setWindowTitle("HiveWE 0.10 - " + QString::fromStdWString(map->filesystem_path.wstring()));
 }
 
 /// Load MPQ will extract all files from the archive in a user specified location
@@ -361,17 +361,21 @@ void HiveWE::load_mpq() {
 	QSettings settings;
 
 	// Choose an MPQ
-	QString file_name = QFileDialog::getOpenFileName(this, "打开文件",
-													 settings.value("openDirectory", QDir::current().path()).toString(),
-													 "魔兽争霸III地图 (*.w3m *.w3x)");
+	QString file_name = QFileDialog::getOpenFileName(
+		this,
+		"打开文件",
+		settings.value("openDirectory", QDir::current().path()).toString(),
+		"魔兽争霸III地图 (*.w3m *.w3x)"
+	);
 
 	if (file_name.isEmpty()) {
 		return;
 	}
 
-	settings.setValue("openDirectory", file_name);
+	settings.setValue("openDirectory", QFileInfo(file_name).absolutePath());
 
-	fs::path mpq_path = file_name.toStdWString();
+	const QString file_path = QDir::cleanPath(file_name);
+	fs::path mpq_path = file_path.toStdWString();
 
 	mpq::MPQ mpq;
 	bool opened = mpq.open(mpq_path);
@@ -381,20 +385,23 @@ void HiveWE::load_mpq() {
 		return;
 	}
 
-	fs::path unpack_location = QFileDialog::getExistingDirectory(
-								   this, "选择解包位置",
-								   settings.value("openDirectory", QDir::current().path()).toString(),
-								   QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks)
-								   .toStdString();
+	const QString unpack_dir = QFileDialog::getExistingDirectory(
+		this,
+		"选择解包位置",
+		settings.value("openDirectory", QDir::current().path()).toString(),
+		QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks
+	);
 
-	if (unpack_location.empty()) {
+	if (unpack_dir.isEmpty()) {
 		return;
 	}
 
-	fs::path final_directory = unpack_location / mpq_path.stem();
+	const QString unpack_dir_clean = QDir::cleanPath(unpack_dir);
+	fs::path unpack_location = unpack_dir_clean.toStdWString();
+	fs::path final_directory = unpack_location / mpq_path.filename().stem();
 
 	try {
-		fs::create_directory(final_directory);
+		fs::create_directories(final_directory);
 	} catch (std::filesystem::filesystem_error& e) {
 		QMessageBox::critical(this, "创建目录失败", "创建用于解包的目录失败，错误：\n" + QString::fromStdString(e.what()), QMessageBox::StandardButton::Ok, QMessageBox::StandardButton::Ok);
 		return;
@@ -417,7 +424,7 @@ void HiveWE::load_mpq() {
 	ui.widget->makeCurrent();
 	map->load(final_directory);
 	map->render_manager.resize_framebuffers(ui.widget->width(), ui.widget->height());
-	setWindowTitle("HiveWE 0.10 - " + QString::fromStdString(map->filesystem_path.string()));
+	setWindowTitle("HiveWE 0.10 - " + QString::fromStdWString(map->filesystem_path.wstring()));
 }
 
 void HiveWE::save() {
@@ -448,7 +455,7 @@ void HiveWE::save_as() {
 		map->save(file_name / map->name);
 	}
 
-	setWindowTitle("HiveWE 0.10 - " + QString::fromStdString(map->filesystem_path.string()));
+	setWindowTitle("HiveWE 0.10 - " + QString::fromStdWString(map->filesystem_path.wstring()));
 }
 
 void HiveWE::export_mpq() {

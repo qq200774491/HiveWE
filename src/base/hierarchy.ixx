@@ -148,7 +148,7 @@ export class Hierarchy {
 					if (archive.file_exists(path)) {
 						auto data = archive.file_open(path).read();
 						std::vector<u8, default_init_allocator<u8>> buffer(data.begin(), data.end());
-						return std::expected<BinaryReader, std::string>(BinaryReader(std::move(buffer)));
+						return std::expected<BinaryReader, std::string>(BinaryReader(std::move(buffer), path.string()));
 					}
 				}
 				return std::unexpected("skip");

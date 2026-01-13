@@ -51,7 +51,7 @@ std::expected<void, std::string> ModelEditor::open_model(const fs::path& path, c
 	dock_tab->setFeature(ads::CDockWidget::DockWidgetFeature::DockWidgetDeleteOnClose, true);
 	dock_tab->setWidget(gl_widget);
 	// dock_tab->setObjectName(QString::fromStdString(item->id));
-	dock_tab->setWindowTitle(QString::fromStdString(path.filename().string()));
+	dock_tab->setWindowTitle(QString::fromStdWString(path.filename().wstring()));
 
 	dock_manager->addDockWidget(ads::CenterDockWidgetArea, dock_tab, dock_area);
 	return {};
