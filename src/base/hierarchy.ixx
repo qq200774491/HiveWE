@@ -111,6 +111,15 @@ export class Hierarchy {
 	}
 
 	bool open_game_data(const fs::path& directory) {
+		const bool looks_classic = fs::exists(directory / "War3.mpq")
+			|| fs::exists(directory / "war3.mpq")
+			|| fs::exists(directory / "War3Patch.mpq")
+			|| fs::exists(directory / "War3x.mpq")
+			|| fs::exists(directory / "War3xLocal.mpq");
+
+		if (looks_classic && open_mpq(directory)) {
+			return true;
+		}
 		if (open_casc(directory)) {
 			return true;
 		}

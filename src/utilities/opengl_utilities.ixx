@@ -69,15 +69,81 @@ export QIcon texture_to_icon(fs::path path) {
 	return QIcon(pix);
 };
 
+namespace {
+	bool has_classic_mpq(const fs::path& directory) {
+		return fs::exists(directory / "War3.mpq")
+			|| fs::exists(directory / "war3.mpq")
+			|| fs::exists(directory / "War3x.mpq")
+			|| fs::exists(directory / "war3x.mpq")
+			|| fs::exists(directory / "War3Patch.mpq")
+			|| fs::exists(directory / "war3patch.mpq");
+	}
+
+	std::optional<fs::path> registry_war3_path() {
+		const std::vector<QString> roots = {
+			"HKEY_LOCAL_MACHINE",
+			"HKEY_CURRENT_USER",
+		};
+		const std::vector<QString> subkeys = {
+			"SOFTWARE\\Blizzard Entertainment\\Warcraft III",
+			"SOFTWARE\\WOW6432Node\\Blizzard Entertainment\\Warcraft III",
+		};
+		const std::vector<QString> value_names = {
+			"InstallPath",
+			"Install Path",
+			"GamePath",
+		};
+
+		for (const auto& root : roots) {
+			for (const auto& subkey : subkeys) {
+				QSettings reg(root + "\\" + subkey, QSettings::NativeFormat);
+				for (const auto& name : value_names) {
+					QString raw = reg.value(name).toString().trimmed();
+					if (raw.isEmpty()) {
+						continue;
+					}
+					if (raw.startsWith('\"') && raw.endsWith('\"') && raw.size() >= 2) {
+						raw = raw.mid(1, raw.size() - 2);
+					}
+					const fs::path candidate = fs::path(raw.toStdWString());
+					if (has_classic_mpq(candidate)) {
+						return candidate;
+					}
+				}
+			}
+		}
+
+		return std::nullopt;
+	}
+}
+
 export fs::path find_warcraft_directory() {
 	QSettings settings;
 	if (settings.contains("warcraftDirectory")) {
-		return settings.value("warcraftDirectory").toString().toStdString();
-	} else if (fs::exists("C:/Program Files/Warcraft III")) {
-		return "C:/Program Files/Warcraft III";
-	} else if (fs::exists("C:/Program Files (x86)/Warcraft III")) {
-		return "C:/Program Files (x86)/Warcraft III";
-	} else {
-		return "";
+		const fs::path saved = settings.value("warcraftDirectory").toString().toStdWString();
+		if (has_classic_mpq(saved)) {
+			return saved;
+		}
 	}
+
+	if (const auto reg = registry_war3_path()) {
+		return *reg;
+	}
+
+	const std::vector<fs::path> common_paths = {
+		"C:/Program Files/Warcraft III",
+		"C:/Program Files (x86)/Warcraft III",
+		"D:/Warcraft III",
+		"D:/Games/Warcraft III",
+		"E:/Warcraft III",
+		"E:/Games/Warcraft III",
+	};
+
+	for (const auto& path : common_paths) {
+		if (has_classic_mpq(path)) {
+			return path;
+		}
+	}
+
+	return "";
 }
