@@ -132,10 +132,12 @@ export class Hierarchy {
 
 		if (source == GameDataSource::mpq) {
 			candidates.push_back([&] { return map_file_read(path); });
-			candidates.push_back([&] {
+			candidates.push_back([&]() -> std::expected<BinaryReader, std::string> {
 				for (const auto& archive : mpq_archives) {
 					if (archive.file_exists(path)) {
-						return BinaryReader(archive.file_open(path).read());
+						auto data = archive.file_open(path).read();
+						std::vector<u8, default_init_allocator<u8>> buffer(data.begin(), data.end());
+						return std::expected<BinaryReader, std::string>(BinaryReader(std::move(buffer)));
 					}
 				}
 				return std::unexpected("skip");
