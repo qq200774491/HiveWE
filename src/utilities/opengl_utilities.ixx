@@ -3,6 +3,7 @@ module;
 #include <QSettings>
 #include <QPainter>
 #include <QIcon>
+#include <QDir>
 
 export module OpenGLUtilities;
 
@@ -70,6 +71,14 @@ export QIcon texture_to_icon(fs::path path) {
 };
 
 namespace {
+	QString normalize_dir(QString path) {
+		path = path.trimmed();
+		if (path.startsWith('\"') && path.endsWith('\"') && path.size() >= 2) {
+			path = path.mid(1, path.size() - 2);
+		}
+		return QDir::cleanPath(path);
+	}
+
 	bool has_classic_mpq(const fs::path& directory) {
 		return fs::exists(directory / "War3.mpq")
 			|| fs::exists(directory / "war3.mpq")
@@ -98,12 +107,9 @@ namespace {
 			for (const auto& subkey : subkeys) {
 				QSettings reg(root + "\\" + subkey, QSettings::NativeFormat);
 				for (const auto& name : value_names) {
-					QString raw = reg.value(name).toString().trimmed();
+					QString raw = normalize_dir(reg.value(name).toString());
 					if (raw.isEmpty()) {
 						continue;
-					}
-					if (raw.startsWith('\"') && raw.endsWith('\"') && raw.size() >= 2) {
-						raw = raw.mid(1, raw.size() - 2);
 					}
 					const fs::path candidate = fs::path(raw.toStdWString());
 					if (has_classic_mpq(candidate)) {
@@ -120,7 +126,7 @@ namespace {
 export fs::path find_warcraft_directory() {
 	QSettings settings;
 	if (settings.contains("warcraftDirectory")) {
-		const fs::path saved = settings.value("warcraftDirectory").toString().toStdWString();
+		const fs::path saved = normalize_dir(settings.value("warcraftDirectory").toString()).toStdWString();
 		if (has_classic_mpq(saved)) {
 			return saved;
 		}
@@ -146,4 +152,45 @@ export fs::path find_warcraft_directory() {
 	}
 
 	return "";
+}
+
+export std::vector<fs::path> find_warcraft_directory_candidates() {
+	std::vector<fs::path> candidates;
+	QSettings settings;
+	if (settings.contains("warcraftDirectory")) {
+		const fs::path saved = normalize_dir(settings.value("warcraftDirectory").toString()).toStdWString();
+		if (!saved.empty()) {
+			candidates.push_back(saved);
+		}
+	}
+	if (const auto reg = registry_war3_path()) {
+		candidates.push_back(*reg);
+	}
+
+	const std::vector<fs::path> common_paths = {
+		"C:/Program Files/Warcraft III",
+		"C:/Program Files (x86)/Warcraft III",
+		"D:/Warcraft III",
+		"D:/Games/Warcraft III",
+		"E:/Warcraft III",
+		"E:/Games/Warcraft III",
+	};
+	for (const auto& path : common_paths) {
+		candidates.push_back(path);
+	}
+
+	// Deduplicate (case-insensitive on Windows)
+	std::vector<fs::path> unique;
+	std::vector<QString> seen;
+	for (const auto& path : candidates) {
+		if (path.empty()) {
+			continue;
+		}
+		const QString key = QString::fromStdWString(path.lexically_normal().wstring()).toLower();
+		if (std::find(seen.begin(), seen.end(), key) == seen.end()) {
+			seen.push_back(key);
+			unique.push_back(path);
+		}
+	}
+	return unique;
 }

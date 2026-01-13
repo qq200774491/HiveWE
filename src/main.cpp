@@ -11,9 +11,14 @@
 #include <QSurfaceFormat>
 #include <QSettings>
 #include <QStyleFactory>
+#include <QMessageBox>
 
 #include "main_window/hivewe.h"
 #include "DockManager.h"
+
+#include <fstream>
+#include <mutex>
+#include <chrono>
 
 #ifdef WIN32
 // To force HiveWE to run on the discrete GPU if available
@@ -24,6 +29,41 @@ __declspec(dllexport) unsigned long NvOptimusEnablement = 1;
 #endif
 
 int main(int argc, char* argv[]) {
+	static std::mutex log_mutex;
+	static std::ofstream log_file;
+	auto log_line = [&](const QString& line) {
+		std::lock_guard<std::mutex> lock(log_mutex);
+		if (!log_file.is_open()) {
+			log_file.open("startup.log", std::ios::app);
+		}
+		if (log_file.is_open()) {
+			log_file << line.toStdString() << "\n";
+			log_file.flush();
+		}
+	};
+
+	qInstallMessageHandler(+[](QtMsgType type, const QMessageLogContext& ctx, const QString& msg) {
+		static std::mutex handler_mutex;
+		static std::ofstream handler_log;
+		std::lock_guard<std::mutex> lock(handler_mutex);
+		if (!handler_log.is_open()) {
+			handler_log.open("startup.log", std::ios::app);
+		}
+		if (!handler_log.is_open()) {
+			return;
+		}
+		QString prefix;
+		switch (type) {
+			case QtDebugMsg: prefix = "[debug] "; break;
+			case QtInfoMsg: prefix = "[info] "; break;
+			case QtWarningMsg: prefix = "[warn] "; break;
+			case QtCriticalMsg: prefix = "[crit] "; break;
+			case QtFatalMsg: prefix = "[fatal] "; break;
+		}
+		handler_log << (prefix + msg).toStdString() << "\n";
+		handler_log.flush();
+	});
+
 	QSurfaceFormat format;
 	format.setDepthBufferSize(24);
 	format.setStencilBufferSize(8);
@@ -69,6 +109,7 @@ int main(int argc, char* argv[]) {
 	QApplication::setStyle("Fusion");
 
 	QApplication a(argc, argv);
+	log_line("=== HiveWE startup ===");
 
 	ads::CDockManager::setConfigFlag(ads::CDockManager::FocusHighlighting);
 	ads::CDockManager::setConfigFlag(ads::CDockManager::AllTabsHaveCloseButton);
@@ -77,7 +118,18 @@ int main(int argc, char* argv[]) {
 	ads::CDockManager::setConfigFlag(ads::CDockManager::MiddleMouseButtonClosesTab);
 
 	const QSettings settings;
-	QFile file("data/themes/" + settings.value("theme", "Dark").toString() + ".qss");
+	auto normalize_theme_name = [](QString theme) {
+		theme = theme.trimmed();
+		if (theme.compare("浅色", Qt::CaseInsensitive) == 0 || theme.compare("light", Qt::CaseInsensitive) == 0) {
+			return QString("Light");
+		}
+		if (theme.compare("深色", Qt::CaseInsensitive) == 0 || theme.compare("dark", Qt::CaseInsensitive) == 0) {
+			return QString("Dark");
+		}
+		return theme;
+	};
+	const QString theme = normalize_theme_name(settings.value("theme", "Dark").toString());
+	QFile file("data/themes/" + theme + ".qss");
 	if (!file.open(QIODevice::ReadOnly)) {
 		qWarning() << "Error: Reading theme failed:" << file.error() << ": " << file.errorString();
 		return -1;
@@ -85,6 +137,16 @@ int main(int argc, char* argv[]) {
 
 	a.setStyleSheet(QLatin1String(file.readAll()));
 
-	HiveWE w;
-	return QApplication::exec();
+	try {
+		HiveWE w;
+		return QApplication::exec();
+	} catch (const std::exception& e) {
+		log_line(QString("[exception] ") + e.what());
+		QMessageBox::critical(nullptr, "启动失败", QString("启动异常：\n%1").arg(e.what()));
+		return -1;
+	} catch (...) {
+		log_line("[exception] unknown");
+		QMessageBox::critical(nullptr, "启动失败", "启动异常：未知错误");
+		return -1;
+	}
 }

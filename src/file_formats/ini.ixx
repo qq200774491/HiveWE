@@ -26,7 +26,11 @@ namespace ini {
 				std::ifstream stream(path, std::ios::binary);
 				buffer = std::vector<uint8_t, default_init_allocator<uint8_t>>(std::istreambuf_iterator<char>(stream), std::istreambuf_iterator<char>());
 			} else {
-				buffer = hierarchy.open_file(path).value().buffer;
+				auto res = hierarchy.open_file(path);
+				if (!res) {
+					throw std::runtime_error("Failed to open INI " + path.string() + ": " + res.error());
+				}
+				buffer = std::move(res->buffer);
 			}
 			std::string_view view(reinterpret_cast<char*>(buffer.data()), buffer.size());
 

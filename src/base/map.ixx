@@ -110,28 +110,39 @@ export class Map: public QObject {
 		// Have to substitute twice since some of the keys refer to other keys in the same file
 		unit_editor_data.substitute(world_edit_strings, "WorldEditStrings");
 
-		units_slk.merge(ini::INI("Units/UnitSkin.txt"), units_meta_slk);
-		units_slk.merge(ini::INI("Units/UnitWeaponsFunc.txt"), units_meta_slk);
-		units_slk.merge(ini::INI("Units/UnitWeaponsSkin.txt"), units_meta_slk);
+		auto merge_ini_if_exists = [&](const fs::path& path, slk::SLK& target, const slk::SLK& meta) {
+			if (hierarchy.file_exists(path)) {
+				target.merge(ini::INI(path), meta);
+			}
+		};
+
+		const bool supports_skins = !hierarchy.is_classic();
+		if (supports_skins) {
+			merge_ini_if_exists("Units/UnitSkin.txt", units_slk, units_meta_slk);
+		}
+		merge_ini_if_exists("Units/UnitWeaponsFunc.txt", units_slk, units_meta_slk);
+		if (supports_skins) {
+			merge_ini_if_exists("Units/UnitWeaponsSkin.txt", units_slk, units_meta_slk);
+		}
 
 		units_slk.merge(slk::SLK("Units/UnitBalance.slk"));
 		units_slk.merge(slk::SLK("Units/unitUI.slk"));
 		units_slk.merge(slk::SLK("Units/UnitWeapons.slk"));
 		units_slk.merge(slk::SLK("Units/UnitAbilities.slk"));
 
-		units_slk.merge(ini::INI("Units/HumanUnitFunc.txt"), units_meta_slk);
-		units_slk.merge(ini::INI("Units/OrcUnitFunc.txt"), units_meta_slk);
-		units_slk.merge(ini::INI("Units/UndeadUnitFunc.txt"), units_meta_slk);
-		units_slk.merge(ini::INI("Units/NightElfUnitFunc.txt"), units_meta_slk);
-		units_slk.merge(ini::INI("Units/NeutralUnitFunc.txt"), units_meta_slk);
-		units_slk.merge(ini::INI("Units/CampaignUnitFunc.txt"), units_meta_slk);
+		merge_ini_if_exists("Units/HumanUnitFunc.txt", units_slk, units_meta_slk);
+		merge_ini_if_exists("Units/OrcUnitFunc.txt", units_slk, units_meta_slk);
+		merge_ini_if_exists("Units/UndeadUnitFunc.txt", units_slk, units_meta_slk);
+		merge_ini_if_exists("Units/NightElfUnitFunc.txt", units_slk, units_meta_slk);
+		merge_ini_if_exists("Units/NeutralUnitFunc.txt", units_slk, units_meta_slk);
+		merge_ini_if_exists("Units/CampaignUnitFunc.txt", units_slk, units_meta_slk);
 
-		units_slk.merge(ini::INI("Units/HumanUnitStrings.txt"), units_meta_slk);
-		units_slk.merge(ini::INI("Units/OrcUnitStrings.txt"), units_meta_slk);
-		units_slk.merge(ini::INI("Units/UndeadUnitStrings.txt"), units_meta_slk);
-		units_slk.merge(ini::INI("Units/NightElfUnitStrings.txt"), units_meta_slk);
-		units_slk.merge(ini::INI("Units/NeutralUnitStrings.txt"), units_meta_slk);
-		units_slk.merge(ini::INI("Units/CampaignUnitStrings.txt"), units_meta_slk);
+		merge_ini_if_exists("Units/HumanUnitStrings.txt", units_slk, units_meta_slk);
+		merge_ini_if_exists("Units/OrcUnitStrings.txt", units_slk, units_meta_slk);
+		merge_ini_if_exists("Units/UndeadUnitStrings.txt", units_slk, units_meta_slk);
+		merge_ini_if_exists("Units/NightElfUnitStrings.txt", units_slk, units_meta_slk);
+		merge_ini_if_exists("Units/NeutralUnitStrings.txt", units_slk, units_meta_slk);
+		merge_ini_if_exists("Units/CampaignUnitStrings.txt", units_slk, units_meta_slk);
 
 		abilities_slk = slk::SLK("Units/AbilityData.slk");
 		abilities_meta_slk = slk::SLK("Units/AbilityMetaData.slk");
@@ -146,25 +157,27 @@ export class Map: public QObject {
 		abilities_meta_slk.set_shadow_data("field", "arpy", "researchbuttonpos2");
 		abilities_meta_slk.build_meta_map();
 
-		abilities_slk.merge(ini::INI("Units/AbilitySkin.txt"), abilities_meta_slk);
-		abilities_slk.merge(ini::INI("Units/AbilitySkinStrings.txt"), abilities_meta_slk);
-		abilities_slk.merge(ini::INI("Units/HumanAbilityFunc.txt"), abilities_meta_slk);
-		abilities_slk.merge(ini::INI("Units/OrcAbilityFunc.txt"), abilities_meta_slk);
-		abilities_slk.merge(ini::INI("Units/UndeadAbilityFunc.txt"), abilities_meta_slk);
-		abilities_slk.merge(ini::INI("Units/NightElfAbilityFunc.txt"), abilities_meta_slk);
-		abilities_slk.merge(ini::INI("Units/NeutralAbilityFunc.txt"), abilities_meta_slk);
-		abilities_slk.merge(ini::INI("Units/ItemAbilityFunc.txt"), abilities_meta_slk);
-		abilities_slk.merge(ini::INI("Units/CommonAbilityFunc.txt"), abilities_meta_slk);
-		abilities_slk.merge(ini::INI("Units/CampaignAbilityFunc.txt"), abilities_meta_slk);
+		if (supports_skins) {
+			merge_ini_if_exists("Units/AbilitySkin.txt", abilities_slk, abilities_meta_slk);
+			merge_ini_if_exists("Units/AbilitySkinStrings.txt", abilities_slk, abilities_meta_slk);
+		}
+		merge_ini_if_exists("Units/HumanAbilityFunc.txt", abilities_slk, abilities_meta_slk);
+		merge_ini_if_exists("Units/OrcAbilityFunc.txt", abilities_slk, abilities_meta_slk);
+		merge_ini_if_exists("Units/UndeadAbilityFunc.txt", abilities_slk, abilities_meta_slk);
+		merge_ini_if_exists("Units/NightElfAbilityFunc.txt", abilities_slk, abilities_meta_slk);
+		merge_ini_if_exists("Units/NeutralAbilityFunc.txt", abilities_slk, abilities_meta_slk);
+		merge_ini_if_exists("Units/ItemAbilityFunc.txt", abilities_slk, abilities_meta_slk);
+		merge_ini_if_exists("Units/CommonAbilityFunc.txt", abilities_slk, abilities_meta_slk);
+		merge_ini_if_exists("Units/CampaignAbilityFunc.txt", abilities_slk, abilities_meta_slk);
 
-		abilities_slk.merge(ini::INI("Units/HumanAbilityStrings.txt"), abilities_meta_slk);
-		abilities_slk.merge(ini::INI("Units/OrcAbilityStrings.txt"), abilities_meta_slk);
-		abilities_slk.merge(ini::INI("Units/UndeadAbilityStrings.txt"), abilities_meta_slk);
-		abilities_slk.merge(ini::INI("Units/NightElfAbilityStrings.txt"), abilities_meta_slk);
-		abilities_slk.merge(ini::INI("Units/NeutralAbilityStrings.txt"), abilities_meta_slk);
-		abilities_slk.merge(ini::INI("Units/ItemAbilityStrings.txt"), abilities_meta_slk);
-		abilities_slk.merge(ini::INI("Units/CommonAbilityStrings.txt"), abilities_meta_slk);
-		abilities_slk.merge(ini::INI("Units/CampaignAbilityStrings.txt"), abilities_meta_slk);
+		merge_ini_if_exists("Units/HumanAbilityStrings.txt", abilities_slk, abilities_meta_slk);
+		merge_ini_if_exists("Units/OrcAbilityStrings.txt", abilities_slk, abilities_meta_slk);
+		merge_ini_if_exists("Units/UndeadAbilityStrings.txt", abilities_slk, abilities_meta_slk);
+		merge_ini_if_exists("Units/NightElfAbilityStrings.txt", abilities_slk, abilities_meta_slk);
+		merge_ini_if_exists("Units/NeutralAbilityStrings.txt", abilities_slk, abilities_meta_slk);
+		merge_ini_if_exists("Units/ItemAbilityStrings.txt", abilities_slk, abilities_meta_slk);
+		merge_ini_if_exists("Units/CommonAbilityStrings.txt", abilities_slk, abilities_meta_slk);
+		merge_ini_if_exists("Units/CampaignAbilityStrings.txt", abilities_slk, abilities_meta_slk);
 
 		// Items
 		items_slk = slk::SLK("Units/ItemData.slk");
@@ -172,9 +185,11 @@ export class Map: public QObject {
 		items_meta_slk.substitute(world_edit_strings, "WorldEditStrings");
 		items_meta_slk.build_meta_map();
 
-		items_slk.merge(ini::INI("Units/ItemSkin.txt"), items_meta_slk);
-		items_slk.merge(ini::INI("Units/ItemFunc.txt"), items_meta_slk);
-		items_slk.merge(ini::INI("Units/ItemStrings.txt"), items_meta_slk);
+		if (supports_skins) {
+			merge_ini_if_exists("Units/ItemSkin.txt", items_slk, items_meta_slk);
+		}
+		merge_ini_if_exists("Units/ItemFunc.txt", items_slk, items_meta_slk);
+		merge_ini_if_exists("Units/ItemStrings.txt", items_slk, items_meta_slk);
 
 		// Doodads
 		doodads_slk = slk::SLK("Doodads/Doodads.slk");
@@ -182,7 +197,9 @@ export class Map: public QObject {
 		doodads_meta_slk.substitute(world_edit_strings, "WorldEditStrings");
 		doodads_meta_slk.build_meta_map();
 
-		doodads_slk.merge(ini::INI("Doodads/DoodadSkins.txt"), doodads_meta_slk);
+		if (supports_skins) {
+			merge_ini_if_exists("Doodads/DoodadSkins.txt", doodads_slk, doodads_meta_slk);
+		}
 		doodads_slk.substitute(world_edit_strings, "WorldEditStrings");
 		doodads_slk.substitute(world_edit_game_strings, "WorldEditStrings");
 
@@ -212,7 +229,9 @@ export class Map: public QObject {
 		destructibles_meta_slk.substitute(world_edit_strings, "WorldEditStrings");
 		destructibles_meta_slk.build_meta_map();
 
-		destructibles_slk.merge(ini::INI("Units/DestructableSkin.txt"), destructibles_meta_slk);
+		if (supports_skins) {
+			merge_ini_if_exists("Units/DestructableSkin.txt", destructibles_slk, destructibles_meta_slk);
+		}
 		destructibles_slk.substitute(world_edit_strings, "WorldEditStrings");
 		destructibles_slk.substitute(world_edit_game_strings, "WorldEditStrings");
 
@@ -243,48 +262,54 @@ export class Map: public QObject {
 		upgrade_meta_slk.set_shadow_data("field", "gbpy", "buttonpos2");
 		upgrade_meta_slk.build_meta_map();
 
-		upgrade_slk.merge(ini::INI("Units/AbilitySkin.txt"), upgrade_meta_slk);
-		upgrade_slk.merge(ini::INI("Units/UpgradeSkin.txt"), upgrade_meta_slk);
-		upgrade_slk.merge(ini::INI("Units/HumanUpgradeFunc.txt"), upgrade_meta_slk);
-		upgrade_slk.merge(ini::INI("Units/OrcUpgradeFunc.txt"), upgrade_meta_slk);
-		upgrade_slk.merge(ini::INI("Units/UndeadUpgradeFunc.txt"), upgrade_meta_slk);
-		upgrade_slk.merge(ini::INI("Units/NightElfUpgradeFunc.txt"), upgrade_meta_slk);
-		upgrade_slk.merge(ini::INI("Units/NeutralUpgradeFunc.txt"), upgrade_meta_slk);
-		upgrade_slk.merge(ini::INI("Units/CampaignUpgradeFunc.txt"), upgrade_meta_slk);
+		if (supports_skins) {
+			merge_ini_if_exists("Units/AbilitySkin.txt", upgrade_slk, upgrade_meta_slk);
+			merge_ini_if_exists("Units/UpgradeSkin.txt", upgrade_slk, upgrade_meta_slk);
+		}
+		merge_ini_if_exists("Units/HumanUpgradeFunc.txt", upgrade_slk, upgrade_meta_slk);
+		merge_ini_if_exists("Units/OrcUpgradeFunc.txt", upgrade_slk, upgrade_meta_slk);
+		merge_ini_if_exists("Units/UndeadUpgradeFunc.txt", upgrade_slk, upgrade_meta_slk);
+		merge_ini_if_exists("Units/NightElfUpgradeFunc.txt", upgrade_slk, upgrade_meta_slk);
+		merge_ini_if_exists("Units/NeutralUpgradeFunc.txt", upgrade_slk, upgrade_meta_slk);
+		merge_ini_if_exists("Units/CampaignUpgradeFunc.txt", upgrade_slk, upgrade_meta_slk);
 
-		upgrade_slk.merge(ini::INI("Units/CampaignUpgradeStrings.txt"), upgrade_meta_slk);
-		upgrade_slk.merge(ini::INI("Units/HumanUpgradeStrings.txt"), upgrade_meta_slk);
-		upgrade_slk.merge(ini::INI("Units/NeutralUpgradeStrings.txt"), upgrade_meta_slk);
-		upgrade_slk.merge(ini::INI("Units/NightElfUpgradeStrings.txt"), upgrade_meta_slk);
-		upgrade_slk.merge(ini::INI("Units/OrcUpgradeStrings.txt"), upgrade_meta_slk);
-		upgrade_slk.merge(ini::INI("Units/UndeadUpgradeStrings.txt"), upgrade_meta_slk);
-		upgrade_slk.merge(ini::INI("Units/UpgradeSkinStrings.txt"), upgrade_meta_slk);
-		upgrade_slk.merge(ini::INI("Units/CampaignUpgradeFunc.txt"), upgrade_meta_slk);
+		merge_ini_if_exists("Units/CampaignUpgradeStrings.txt", upgrade_slk, upgrade_meta_slk);
+		merge_ini_if_exists("Units/HumanUpgradeStrings.txt", upgrade_slk, upgrade_meta_slk);
+		merge_ini_if_exists("Units/NeutralUpgradeStrings.txt", upgrade_slk, upgrade_meta_slk);
+		merge_ini_if_exists("Units/NightElfUpgradeStrings.txt", upgrade_slk, upgrade_meta_slk);
+		merge_ini_if_exists("Units/OrcUpgradeStrings.txt", upgrade_slk, upgrade_meta_slk);
+		merge_ini_if_exists("Units/UndeadUpgradeStrings.txt", upgrade_slk, upgrade_meta_slk);
+		if (supports_skins) {
+			merge_ini_if_exists("Units/UpgradeSkinStrings.txt", upgrade_slk, upgrade_meta_slk);
+		}
+		merge_ini_if_exists("Units/CampaignUpgradeFunc.txt", upgrade_slk, upgrade_meta_slk);
 
 		buff_slk = slk::SLK("Units/AbilityBuffData.slk");
 		buff_meta_slk = slk::SLK("Units/AbilityBuffMetaData.slk");
 		buff_meta_slk.substitute(world_edit_strings, "WorldEditStrings");
 		buff_meta_slk.build_meta_map();
 
-		buff_slk.merge(ini::INI("Units/AbilitySkin.txt"), buff_meta_slk);
-		buff_slk.merge(ini::INI("Units/AbilitySkinStrings.txt"), buff_meta_slk);
-		buff_slk.merge(ini::INI("Units/HumanAbilityFunc.txt"), buff_meta_slk);
-		buff_slk.merge(ini::INI("Units/OrcAbilityFunc.txt"), buff_meta_slk);
-		buff_slk.merge(ini::INI("Units/UndeadAbilityFunc.txt"), buff_meta_slk);
-		buff_slk.merge(ini::INI("Units/NightElfAbilityFunc.txt"), buff_meta_slk);
-		buff_slk.merge(ini::INI("Units/NeutralAbilityFunc.txt"), buff_meta_slk);
-		buff_slk.merge(ini::INI("Units/ItemAbilityFunc.txt"), buff_meta_slk);
-		buff_slk.merge(ini::INI("Units/CommonAbilityFunc.txt"), buff_meta_slk);
-		buff_slk.merge(ini::INI("Units/CampaignAbilityFunc.txt"), buff_meta_slk);
+		if (supports_skins) {
+			merge_ini_if_exists("Units/AbilitySkin.txt", buff_slk, buff_meta_slk);
+			merge_ini_if_exists("Units/AbilitySkinStrings.txt", buff_slk, buff_meta_slk);
+		}
+		merge_ini_if_exists("Units/HumanAbilityFunc.txt", buff_slk, buff_meta_slk);
+		merge_ini_if_exists("Units/OrcAbilityFunc.txt", buff_slk, buff_meta_slk);
+		merge_ini_if_exists("Units/UndeadAbilityFunc.txt", buff_slk, buff_meta_slk);
+		merge_ini_if_exists("Units/NightElfAbilityFunc.txt", buff_slk, buff_meta_slk);
+		merge_ini_if_exists("Units/NeutralAbilityFunc.txt", buff_slk, buff_meta_slk);
+		merge_ini_if_exists("Units/ItemAbilityFunc.txt", buff_slk, buff_meta_slk);
+		merge_ini_if_exists("Units/CommonAbilityFunc.txt", buff_slk, buff_meta_slk);
+		merge_ini_if_exists("Units/CampaignAbilityFunc.txt", buff_slk, buff_meta_slk);
 
-		buff_slk.merge(ini::INI("Units/HumanAbilityStrings.txt"), buff_meta_slk);
-		buff_slk.merge(ini::INI("Units/OrcAbilityStrings.txt"), buff_meta_slk);
-		buff_slk.merge(ini::INI("Units/UndeadAbilityStrings.txt"), buff_meta_slk);
-		buff_slk.merge(ini::INI("Units/NightElfAbilityStrings.txt"), buff_meta_slk);
-		buff_slk.merge(ini::INI("Units/NeutralAbilityStrings.txt"), buff_meta_slk);
-		buff_slk.merge(ini::INI("Units/ItemAbilityStrings.txt"), buff_meta_slk);
-		buff_slk.merge(ini::INI("Units/CommonAbilityStrings.txt"), buff_meta_slk);
-		buff_slk.merge(ini::INI("Units/CampaignAbilityStrings.txt"), buff_meta_slk);
+		merge_ini_if_exists("Units/HumanAbilityStrings.txt", buff_slk, buff_meta_slk);
+		merge_ini_if_exists("Units/OrcAbilityStrings.txt", buff_slk, buff_meta_slk);
+		merge_ini_if_exists("Units/UndeadAbilityStrings.txt", buff_slk, buff_meta_slk);
+		merge_ini_if_exists("Units/NightElfAbilityStrings.txt", buff_slk, buff_meta_slk);
+		merge_ini_if_exists("Units/NeutralAbilityStrings.txt", buff_slk, buff_meta_slk);
+		merge_ini_if_exists("Units/ItemAbilityStrings.txt", buff_slk, buff_meta_slk);
+		merge_ini_if_exists("Units/CommonAbilityStrings.txt", buff_slk, buff_meta_slk);
+		merge_ini_if_exists("Units/CampaignAbilityStrings.txt", buff_slk, buff_meta_slk);
 
 		units_table = new TableModel(&units_slk, &units_meta_slk, &trigger_strings);
 		items_table = new TableModel(&items_slk, &items_meta_slk, &trigger_strings);

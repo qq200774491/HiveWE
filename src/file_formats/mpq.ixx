@@ -11,7 +11,7 @@ namespace fs = std::filesystem;
 
 // A thin wrapper around StormLib https://github.com/ladislav-zezula/StormLib
 namespace mpq {
-	export inline constexpr unsigned long open_read_only = MPQ_OPEN_READ_ONLY;
+export inline constexpr unsigned long open_read_only = STREAM_FLAG_READ_ONLY;
 
 	static std::string normalize_mpq_path(const fs::path& path) {
 		std::string normalized = path.string();
@@ -116,7 +116,9 @@ namespace mpq {
 		}
 
 		bool open(const fs::path& path, const unsigned long flags = 0) {
-			return SFileOpenArchive(path.c_str(), 0, flags, &handle);
+			fs::path normalized = path;
+			normalized.make_preferred();
+			return SFileOpenArchive(normalized.c_str(), 0, flags, &handle);
 		}
 
 		void close() {

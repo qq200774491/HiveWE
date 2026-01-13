@@ -64,7 +64,11 @@ namespace slk {
 					std::istreambuf_iterator<char>()
 				);
 			} else {
-				buffer = hierarchy.open_file(path).value().buffer;
+				auto res = hierarchy.open_file(path);
+				if (!res) {
+					throw std::runtime_error("Failed to open SLK " + path.string() + ": " + res.error());
+				}
+				buffer = std::move(res->buffer);
 			}
 
 			std::string_view view(reinterpret_cast<char*>(buffer.data()), buffer.size());

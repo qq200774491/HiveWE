@@ -111,19 +111,13 @@ export class Hierarchy {
 	}
 
 	bool open_game_data(const fs::path& directory) {
-		const bool looks_classic = fs::exists(directory / "War3.mpq")
-			|| fs::exists(directory / "war3.mpq")
-			|| fs::exists(directory / "War3Patch.mpq")
-			|| fs::exists(directory / "War3x.mpq")
-			|| fs::exists(directory / "War3xLocal.mpq");
-
-		if (looks_classic && open_mpq(directory)) {
+		if (open_mpq(directory)) {
 			return true;
 		}
 		if (open_casc(directory)) {
 			return true;
 		}
-		return open_mpq(directory);
+		return false;
 	}
 
 	bool is_classic() const {
@@ -137,12 +131,18 @@ export class Hierarchy {
 		using Candidate = std::function<std::expected<BinaryReader, std::string>()>;
 
 		std::vector<Candidate> candidates {
-			[&] { return read_file("data/overrides" / path); },
-			[&] { return local_files ? read_file(root_directory / path) : std::unexpected("skip"); },
+			[&] {
+				return read_file("data/overrides" / path);
+			},
+			[&] {
+				return local_files ? read_file(root_directory / path) : std::unexpected("skip");
+			},
 		};
 
 		if (source == GameDataSource::mpq) {
-			candidates.push_back([&] { return map_file_read(path); });
+			candidates.push_back([&] {
+				return map_file_read(path);
+			});
 			candidates.push_back([&]() -> std::expected<BinaryReader, std::string> {
 				for (const auto& archive : mpq_archives) {
 					if (archive.file_exists(path)) {
@@ -154,23 +154,45 @@ export class Hierarchy {
 				return std::unexpected("skip");
 			});
 		} else {
-			candidates.push_back([&] { return (hd && teen) ? map_file_read("_hd.w3mod:_teen.w3mod:" + path_str) : std::unexpected("skip"); });
-			candidates.push_back([&] { return hd ? map_file_read("_hd.w3mod:" + path_str) : std::unexpected("skip"); });
-			candidates.push_back([&] { return map_file_read(path); });
+			candidates.push_back([&] {
+				return (hd && teen) ? map_file_read("_hd.w3mod:_teen.w3mod:" + path_str) : std::unexpected("skip");
+			});
+			candidates.push_back([&] {
+				return hd ? map_file_read("_hd.w3mod:" + path_str) : std::unexpected("skip");
+			});
+			candidates.push_back([&] {
+				return map_file_read(path);
+			});
 			candidates.push_back([&] {
 				return hd ? game_data.open_file(std::format("war3.w3mod:_hd.w3mod:_tilesets/{}.w3mod:{}", tileset, path_str))
 						  : std::unexpected("skip");
 			});
-			candidates.push_back([&] { return (hd && teen) ? game_data.open_file("war3.w3mod:_hd.w3mod:_teen.w3mod:"s + path_str) : std::unexpected("skip"); });
-			candidates.push_back([&] { return hd ? game_data.open_file("war3.w3mod:_hd.w3mod:"s + path_str) : std::unexpected("skip"); });
-			candidates.push_back([&] { return game_data.open_file(std::format("war3.w3mod:_tilesets/{}.w3mod:{}", tileset, path_str)); });
-			candidates.push_back([&] { return game_data.open_file("war3.w3mod:_locales/enus.w3mod:"s + path_str); });
-			candidates.push_back([&] { return teen ? game_data.open_file("war3.w3mod:_teen.w3mod:"s + path_str) : std::unexpected("skip"); });
-			candidates.push_back([&] { return game_data.open_file("war3.w3mod:"s + path_str); });
-			candidates.push_back([&] { return game_data.open_file("war3.w3mod:_deprecated.w3mod:"s + path_str); });
+			candidates.push_back([&] {
+				return (hd && teen) ? game_data.open_file("war3.w3mod:_hd.w3mod:_teen.w3mod:"s + path_str) : std::unexpected("skip");
+			});
+			candidates.push_back([&] {
+				return hd ? game_data.open_file("war3.w3mod:_hd.w3mod:"s + path_str) : std::unexpected("skip");
+			});
+			candidates.push_back([&] {
+				return game_data.open_file(std::format("war3.w3mod:_tilesets/{}.w3mod:{}", tileset, path_str));
+			});
+			candidates.push_back([&] {
+				return game_data.open_file("war3.w3mod:_locales/enus.w3mod:"s + path_str);
+			});
+			candidates.push_back([&] {
+				return teen ? game_data.open_file("war3.w3mod:_teen.w3mod:"s + path_str) : std::unexpected("skip");
+			});
+			candidates.push_back([&] {
+				return game_data.open_file("war3.w3mod:"s + path_str);
+			});
+			candidates.push_back([&] {
+				return game_data.open_file("war3.w3mod:_deprecated.w3mod:"s + path_str);
+			});
 		}
 
-		candidates.push_back([&] { return aliases.exists(path_str) ? open_file(aliases.alias(path_str)) : std::unexpected("skip"); });
+		candidates.push_back([&] {
+			return aliases.exists(path_str) ? open_file(aliases.alias(path_str)) : std::unexpected("skip");
+		});
 
 		for (const auto& candidate : candidates) {
 			if (const auto res = candidate(); res) {

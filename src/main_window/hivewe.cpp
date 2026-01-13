@@ -29,6 +29,8 @@ import "object_editor/icon_view.h";
 #include "trigger_editor.h"
 #include "QMessageBox"
 #include "QProcess"
+#include <QDir>
+#include <QDebug>
 
 namespace fs = std::filesystem;
 
@@ -41,18 +43,39 @@ HiveWE::HiveWE(QWidget* parent)
 	// setWindowFlag(Qt::NoTitleBarBackgroundHint, true);
 	// setAttribute(Qt::WA_LayoutOnEntireRect, true);
 
-	fs::path directory = find_warcraft_directory();
-
 	QSettings settings;
-	while (true) {
-		if (hierarchy.open_game_data(directory)) {
+	fs::path directory;
+	bool opened = false;
+
+	const auto candidates = find_warcraft_directory_candidates();
+	{
+		QStringList list;
+		for (const auto& c : candidates) {
+			list << QString::fromStdWString(c.wstring());
+		}
+		qInfo() << "War3 candidates:" << list;
+	}
+
+	for (const auto& candidate : candidates) {
+		if (candidate.empty()) {
+			continue;
+		}
+		qInfo() << "Trying war3 directory:" << QString::fromStdWString(candidate.wstring());
+		if (hierarchy.open_game_data(candidate)) {
 			const bool has_common = hierarchy.file_exists("scripts/common.j");
 			const bool has_blizzard = hierarchy.file_exists("scripts/blizzard.j");
+			qInfo() << "open_game_data ok, common:" << has_common << "blizzard:" << has_blizzard;
 			if (has_common && has_blizzard) {
+				directory = candidate;
+				opened = true;
 				break;
 			}
+		} else {
+			qInfo() << "open_game_data failed";
 		}
+	}
 
+	while (!opened) {
 		QMessageBox::warning(
 			this,
 			"选择魔兽目录",
@@ -60,20 +83,56 @@ HiveWE::HiveWE(QWidget* parent)
 			"请选择正确的 Warcraft III 安装目录（包含 War3.mpq 等 MPQ 文件）。"
 		);
 
-		directory = QFileDialog::getExistingDirectory(this, "选择魔兽目录", "/home", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks).toStdWString();
-		if (directory == "") {
+		const QString picked = QFileDialog::getExistingDirectory(
+			this,
+			"选择魔兽目录",
+			"/home",
+			QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks
+		);
+		if (picked.isEmpty()) {
+			QMessageBox::information(this, "未选择目录", "未选择魔兽目录，程序将退出。");
 			exit(EXIT_SUCCESS);
 		}
+
+		directory = QDir::cleanPath(picked).toStdWString();
+		qInfo() << "User picked war3 directory:" << picked;
+		if (hierarchy.open_game_data(directory)) {
+			const bool has_common = hierarchy.file_exists("scripts/common.j");
+			const bool has_blizzard = hierarchy.file_exists("scripts/blizzard.j");
+			qInfo() << "open_game_data ok, common:" << has_common << "blizzard:" << has_blizzard;
+			if (has_common && has_blizzard) {
+				opened = true;
+				break;
+			}
+		} else {
+			qInfo() << "open_game_data failed";
+		}
 	}
+
 	settings.setValue("warcraftDirectory", QString::fromStdString(directory.string()));
 
 	// Place common.j and blizzard.j in the data folder. Required by JassHelper
-	BinaryReader common = hierarchy.open_file("scripts/common.j").value();
-	std::ofstream output("data/tools/common.j");
-	output.write(reinterpret_cast<char*>(common.buffer.data()), common.buffer.size());
-	BinaryReader blizzard = hierarchy.open_file("scripts/blizzard.j").value();
-	std::ofstream output2("data/tools/blizzard.j");
-	output2.write(reinterpret_cast<char*>(blizzard.buffer.data()), blizzard.buffer.size());
+	{
+		auto common_res = hierarchy.open_file("scripts/common.j");
+		if (!common_res) {
+			const std::string message = "无法读取 scripts/common.j：\n" + common_res.error();
+			QMessageBox::critical(this, "启动失败", QString::fromStdString(message));
+			throw std::runtime_error(message);
+		}
+		std::ofstream output("data/tools/common.j");
+		output.write(reinterpret_cast<char*>(common_res->buffer.data()), common_res->buffer.size());
+	}
+
+	{
+		auto blizzard_res = hierarchy.open_file("scripts/blizzard.j");
+		if (!blizzard_res) {
+			const std::string message = "无法读取 scripts/blizzard.j：\n" + blizzard_res.error();
+			QMessageBox::critical(this, "启动失败", QString::fromStdString(message));
+			throw std::runtime_error(message);
+		}
+		std::ofstream output2("data/tools/blizzard.j");
+		output2.write(reinterpret_cast<char*>(blizzard_res->buffer.data()), blizzard_res->buffer.size());
+	}
 
 	ui.setupUi(this);
 	context = ui.widget;
@@ -145,7 +204,18 @@ HiveWE::HiveWE(QWidget* parent)
 	// Reload theme
 	connect(new QShortcut(Qt::Key_F5, this), &QShortcut::activated, [&]() {
 		QSettings settings;
-		QFile file("data/themes/" + settings.value("theme").toString() + ".qss");
+		auto normalize_theme_name = [](QString theme) {
+			theme = theme.trimmed();
+			if (theme.compare("浅色", Qt::CaseInsensitive) == 0 || theme.compare("light", Qt::CaseInsensitive) == 0) {
+				return QString("Light");
+			}
+			if (theme.compare("深色", Qt::CaseInsensitive) == 0 || theme.compare("dark", Qt::CaseInsensitive) == 0) {
+				return QString("Dark");
+			}
+			return theme;
+		};
+		const QString theme = normalize_theme_name(settings.value("theme").toString());
+		QFile file("data/themes/" + theme + ".qss");
 		file.open(QFile::ReadOnly);
 		QString StyleSheet = QLatin1String(file.readAll());
 

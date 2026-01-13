@@ -5,6 +5,19 @@
 
 import std;
 
+namespace {
+	QString normalize_theme_name(QString theme) {
+		theme = theme.trimmed();
+		if (theme.compare("浅色", Qt::CaseInsensitive) == 0 || theme.compare("light", Qt::CaseInsensitive) == 0) {
+			return "Light";
+		}
+		if (theme.compare("深色", Qt::CaseInsensitive) == 0 || theme.compare("dark", Qt::CaseInsensitive) == 0) {
+			return "Dark";
+		}
+		return theme;
+	}
+}
+
 void setTestArgs(Ui::SettingsEditor &ui) {
 	ui.testArgs->setText(ui.userArgs->text() + " -mapdiff " + QString::fromStdString(std::string("") + char(ui.diff->currentIndex() + '0')) +
 						(ui.windowmode->currentText() != "Default" ? " -windowmode " + QString([](int x) {
@@ -20,7 +33,17 @@ SettingsEditor::SettingsEditor(QWidget* parent)
 	: QDialog(parent) {
 	ui.setupUi(this);
 	QSettings settings;
-	ui.theme->setCurrentText(settings.value("theme", "Dark").toString());
+	ui.theme->setItemData(0, "Light");
+	ui.theme->setItemData(1, "Dark");
+	const QString theme = normalize_theme_name(settings.value("theme", "Dark").toString());
+	int theme_index = ui.theme->findData(theme);
+	if (theme_index < 0) {
+		theme_index = ui.theme->findText(theme);
+	}
+	if (theme_index < 0) {
+		theme_index = 1; // Dark default
+	}
+	ui.theme->setCurrentIndex(theme_index);
 	ui.comments->setChecked(settings.value("comments", "True").toString() != "False");
 	ui.flavour->setCurrentText(settings.value("flavour").toString());
 	ui.hd->setChecked(settings.value("hd", "True").toString() != "False");
@@ -49,7 +72,8 @@ SettingsEditor::SettingsEditor(QWidget* parent)
 	connect(ui.buttonBox, &QDialogButtonBox::accepted, [&]() {
 		save();
 		QSettings settings;
-		QFile file("data/themes/" + settings.value("theme").toString() + ".qss");
+		const QString theme = normalize_theme_name(settings.value("theme").toString());
+		QFile file("data/themes/" + theme + ".qss");
 		file.open(QFile::ReadOnly);
 		QString StyleSheet = QLatin1String(file.readAll());
 
@@ -67,7 +91,10 @@ SettingsEditor::SettingsEditor(QWidget* parent)
 
 void SettingsEditor::save() const {
 	QSettings settings;
-	settings.setValue("theme", ui.theme->currentText());
+	const QString theme = ui.theme->currentData().toString().isEmpty()
+		? normalize_theme_name(ui.theme->currentText())
+		: ui.theme->currentData().toString();
+	settings.setValue("theme", theme);
 	settings.setValue("flavour", ui.flavour->currentText());
 	settings.setValue("comments", ui.comments->isChecked() ? "True" : "False");
 	settings.setValue("hd", ui.hd->isChecked() ? "True" : "False");
