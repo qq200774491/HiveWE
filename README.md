@@ -1,69 +1,73 @@
 # HiveWE
-HiveWE is a Warcraft III World Editor (WE) that focuses on speed and ease of use. 
-It improves massively on the vanilla WE, especially for large maps where the regular World Editor is often too slow and clunky.
-The aim is to be a lightweight tool that only does what it needs to and relegates other tasks to high-quality apps.
+HiveWE 是一款魔兽争霸 III 世界编辑器（WE），专注于速度与易用性。
+相较于原版 WE 有显著提升，尤其是在大地图上，原版世界编辑器常常过慢且笨重。
+目标是成为一款轻量工具，只做必须的事情，把其他任务交给高质量的外部应用。
 
-[Thread on the Hiveworkshop](https://www.hiveworkshop.com/threads/introducing-hivewe.303183/)
+## 本仓库目标
+- 中文支持
+- 兼容 Warcraft III 1.27 版本
 
-Some of the benefits over the vanilla WE:
-- Faster loading
-- Faster rendering
-- Faster editing
-- Modern UI/UX
-- Edit the pathing map directly
-- Edit global tile pathing
-- Import heightmaps
-- Improved editing palettes
+[Hiveworkshop 论坛帖](https://www.hiveworkshop.com/threads/introducing-hivewe.303183/)
 
-## Features
+相较于原版 WE 的优势：
+- 更快的加载
+- 更快的渲染
+- 更快的编辑
+- 现代化 UI/UX
+- 直接编辑路径贴图
+- 编辑全局地形行走性
+- 导入高度图
+- 改进的编辑面板
 
-- Edit the terrain
-![HiveWE Screenshot](/Screenshots/HiveWE.png)
-- Advanced Object Editor
-![HiveWE Screenshot](/Screenshots/ObjectEditor.png)
-- Directly edit the pathing map  
-![Edit the Pathing Map](/Screenshots/PathingEditing.png)
-- Edit global tile pathing  
-![Edit global tile pathing](/Screenshots/GlobalPathingEditing.png)
+## 功能
 
-## Download
+- 地形编辑
+![HiveWE 截图](/Screenshots/HiveWE.png)
+- 高级物体编辑器
+![HiveWE 截图](/Screenshots/ObjectEditor.png)
+- 直接编辑路径贴图  
+![编辑路径贴图](/Screenshots/PathingEditing.png)
+- 编辑全局地形行走性  
+![编辑全局地形行走性](/Screenshots/GlobalPathingEditing.png)
 
-See the [releases page](https://github.com/stijnherfst/HiveWE/releases) for binary downloads.
+## 下载
 
-## Other Community Tools
+二进制下载请参见 [releases 页面](https://github.com/stijnherfst/HiveWE/releases)。
 
-Trigger editing: [WC3 Typescript](https://cipherxof.github.io/w3ts/)  
-Model editing: [3DS Max Plugin](https://github.com/TaylorMouse/warcraft_III_reforged_tools)
-or [Retera Model Studio](https://github.com/Retera/ReterasModelStudio)
+## 其他社区工具
 
-## Build Instructions
+触发器编辑：[WC3 Typescript](https://cipherxof.github.io/w3ts/)  
+模型编辑：[3DS Max 插件](https://github.com/TaylorMouse/warcraft_III_reforged_tools)
+或 [Retera Model Studio](https://github.com/Retera/ReterasModelStudio)
 
-0. Requires Visual Studio 17.14 or higher (C++20 modules)
-1. Clone HiveWE somewhere 
+## 构建说明
+
+0. 需要 Visual Studio 17.14 或更高版本（C++20 模块）
+1. 将 HiveWE 克隆到本地任意目录  
 `git clone https://github.com/stijnherfst/HiveWE.git`
-2. Clone [vcpkg](https://github.com/microsoft/vcpkg) somewhere central (eg. "C:/")
+2. 将 [vcpkg](https://github.com/microsoft/vcpkg) 克隆到一个统一目录（例如 "C:/")  
 `git clone https://github.com/Microsoft/vcpkg.git`
-3. Run vcpkg/bootstrap-vcpkg.bat
-4. Add a user environment variable to your system:
-- `VCPKG_ROOT`: the location where vcpkg is installed (e.g. "C:\vcpkg")
-5. Open Visual Studio as an **Administrator** and using the open folder button to open the HiveWE folder. (**Administrator required** for creating a symbolic link on Windows)
-6. Dependencies will be automatically compiled, might take about 15-20 minutes (mostly due to Qt)
+3. 运行 `vcpkg/bootstrap-vcpkg.bat`
+4. 在系统中添加一个用户环境变量：  
+- `VCPKG_ROOT`：vcpkg 的安装位置（例如 "C:\vcpkg"）
+5. 以**管理员**身份打开 Visual Studio，并使用“打开文件夹”按钮打开 HiveWE 目录。（Windows 下创建符号链接需要**管理员权限**）
+6. 依赖会自动编译，可能需要 15-20 分钟（主要由于 Qt）
 
-**Done**
+**完成**
 
-If you run into any issues, then feel free to contact me at HiveWorkshop (eejin) or on Discord eejin#4240
+如果遇到问题，欢迎在 HiveWorkshop 联系我（eejin），或在 Discord 上联系 eejin#4240。
 
-## Potential Contributions
+## 潜在贡献
 
-Want to help with the development of HiveWE? Below is a list of features that you could implement. You can try one of these or just add something else you feel like HiveWE should have. Any contributions are welcome!
+想参与 HiveWE 的开发？以下是一些可以实现的功能。你可以尝试其中之一，或添加你认为 HiveWE 需要的其他内容。欢迎任何贡献！
 
-- Being able to change forces/teams
-- Changing map sizes/camera bound
-- Ramp editing with the terrain palette
-- Making HiveWE run faster
-- An FDF frame editor
-- Text colorizer
-- Advanced terrain editing tools (e.g. flood fill, magic wand selection)
-- Or any other functionality you think would be cool
+- 能够修改势力/队伍
+- 修改地图尺寸/镜头范围
+- 使用地形面板编辑斜坡
+- 让 HiveWE 更快
+- FDF 框架编辑器
+- 文本着色器
+- 高级地形编辑工具（例如洪泛填充、魔棒选择）
+- 或其他你认为很酷的功能
 
-If you have any questions, then don't be afraid to message me here, on the HiveWorkshop (eejin) or on Discord (eejin)
+如果你有任何问题，欢迎在这里、HiveWorkshop（eejin）或 Discord（eejin）联系我。

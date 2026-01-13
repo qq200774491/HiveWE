@@ -26,6 +26,10 @@ export class Hierarchy {
 	fs::path warcraft_directory;
 	fs::path root_directory;
 
+	mutable std::unordered_map<std::string, fs::path> map_import_index;
+	mutable fs::path map_import_index_root;
+	mutable bool map_import_index_built = false;
+
 	enum class GameDataSource {
 		none,
 		casc,
@@ -239,7 +243,17 @@ export class Hierarchy {
 
 	[[nodiscard]]
 	auto map_file_read(const fs::path& path) const -> std::expected<BinaryReader, std::string> {
-		return read_file(map_directory / path);
+		auto direct = read_file(map_directory / path);
+		if (direct) {
+			return direct;
+		}
+
+		if (auto fallback = resolve_map_import(path)) {
+			const fs::path resolved = fallback->is_absolute() ? *fallback : (map_directory / *fallback);
+			return read_file(resolved);
+		}
+
+		return direct;
 	}
 
 	/// source somewhere on disk, destination relative to the map
@@ -262,7 +276,92 @@ export class Hierarchy {
 	}
 
 	bool map_file_exists(const fs::path& path) const {
-		return fs::exists(map_directory / path);
+		if (fs::exists(map_directory / path)) {
+			return true;
+		}
+
+		if (auto fallback = resolve_map_import(path)) {
+			const fs::path resolved = fallback->is_absolute() ? *fallback : (map_directory / *fallback);
+			return fs::exists(resolved);
+		}
+
+		return false;
+	}
+
+  private:
+	void ensure_map_import_index() const {
+		if (map_import_index_built && map_import_index_root == map_directory) {
+			return;
+		}
+
+		map_import_index_built = true;
+		map_import_index_root = map_directory;
+		map_import_index.clear();
+
+		if (map_directory.empty() || !fs::exists(map_directory)) {
+			return;
+		}
+
+		bool loaded_from_imp = false;
+		const fs::path imp_path = map_directory / "war3map.imp";
+		if (fs::exists(imp_path)) {
+			if (auto res = read_file(imp_path)) {
+				BinaryReader reader = std::move(res.value());
+				try {
+					const auto version = reader.read<u32>();
+					const auto count = reader.read<u32>();
+					for (u32 i = 0; i < count; i++) {
+						if (reader.remaining() <= 0) {
+							break;
+						}
+						(void)reader.read<u8>();
+						const std::string entry = reader.read_c_string();
+						if (entry.empty()) {
+							continue;
+						}
+						const std::string key = to_lowercase_copy(fs::path(entry).filename().string());
+						if (!key.empty() && !map_import_index.contains(key)) {
+							map_import_index.emplace(key, fs::path(entry));
+						}
+					}
+					loaded_from_imp = !map_import_index.empty();
+				} catch (...) {
+					map_import_index.clear();
+				}
+			}
+		}
+
+		if (!loaded_from_imp) {
+			for (const auto& entry : fs::recursive_directory_iterator(map_directory)) {
+				if (!entry.is_regular_file()) {
+					continue;
+				}
+				const std::string key = to_lowercase_copy(entry.path().filename().string());
+				if (key.empty() || map_import_index.contains(key)) {
+					continue;
+				}
+				const fs::path relative = entry.path().lexically_relative(map_directory);
+				map_import_index.emplace(key, relative);
+			}
+		}
+	}
+
+	std::optional<fs::path> resolve_map_import(const fs::path& path) const {
+		if (path.empty() || map_directory.empty()) {
+			return std::nullopt;
+		}
+
+		ensure_map_import_index();
+		const std::string key = to_lowercase_copy(path.filename().string());
+		if (key.empty()) {
+			return std::nullopt;
+		}
+
+		if (const auto found = map_import_index.find(key); found != map_import_index.end()) {
+			return found->second;
+		}
+
+		return std::nullopt;
 	}
 
 	void map_file_rename(const fs::path& original, const fs::path& renamed) const {
