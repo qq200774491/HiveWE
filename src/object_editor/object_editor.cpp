@@ -382,7 +382,7 @@ void ObjectEditor::addTypeTreeView(BaseTreeModel* treeModel, BaseFilter*& filter
 
 	QToolButton* hideDefault = new QToolButton;
 	hideDefault->setIcon(icon);
-	hideDefault->setToolTip("Hide default " + name);
+	hideDefault->setToolTip("隐藏默认 " + name);
 	hideDefault->setCheckable(true);
 	connect(hideDefault, &QToolButton::toggled, [=](bool checked) {
 		filter->setFilterCustom(checked);

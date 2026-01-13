@@ -255,7 +255,7 @@ export class QRibbonFileButton : public QToolButton {
 	QRibbonMenu* menu = new QRibbonMenu;
 	explicit QRibbonFileButton(QWidget* parent = nullptr)
 		: QToolButton(parent) {
-		setText("File");
+		setText("文件");
 		setMenu(menu);
 	}
 };

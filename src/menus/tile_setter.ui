@@ -26,7 +26,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>TileSetter</string>
+   <string>地形设置</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="sizeConstraint">
@@ -41,10 +41,10 @@
       </sizepolicy>
      </property>
      <property name="toolTip">
-      <string>The tiles in the map tileset.</string>
+      <string>地图地形纹理集中的地形。</string>
      </property>
      <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Selected Tiles&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;已选地形&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
     </widget>
    </item>
@@ -57,10 +57,10 @@
       </sizepolicy>
      </property>
      <property name="toolTip">
-      <string>The current tilename.</string>
+      <string>当前地形名称。</string>
      </property>
      <property name="text">
-      <string>Tile: </string>
+      <string>地形：</string>
      </property>
     </widget>
    </item>
@@ -76,30 +76,30 @@
      <item>
       <widget class="QPushButton" name="selectedShiftLeft">
        <property name="toolTip">
-        <string>Shifts the selected tile left.</string>
+        <string>将所选地形左移。</string>
        </property>
        <property name="text">
-        <string>Shift Left</string>
+        <string>左移</string>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QPushButton" name="selectedShiftRight">
        <property name="toolTip">
-        <string>Shift the selected tile right.</string>
+        <string>将所选地形右移。</string>
        </property>
        <property name="text">
-        <string>Shift Right</string>
+        <string>右移</string>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QPushButton" name="selectedRemove">
        <property name="toolTip">
-        <string>Removes the selected tile from the tleset.</string>
+        <string>从地形集中移除所选地形。</string>
        </property>
        <property name="text">
-        <string>Remove</string>
+        <string>移除</string>
        </property>
       </widget>
      </item>
@@ -129,17 +129,17 @@
         </sizepolicy>
        </property>
        <property name="toolTip">
-        <string>Tiles you can add to the map tileset.</string>
+        <string>可添加到地图地形集的地形。</string>
        </property>
        <property name="text">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Additonal Tiles&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;可添加地形&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QComboBox" name="tileset">
        <property name="toolTip">
-        <string>The tileset to choose additional tiles from.</string>
+        <string>选择添加地形的来源地形集。</string>
        </property>
        <property name="maxVisibleItems">
         <number>20</number>
@@ -157,10 +157,10 @@
       </sizepolicy>
      </property>
      <property name="toolTip">
-      <string>The current tilename.</string>
+      <string>当前地形名称。</string>
      </property>
      <property name="text">
-      <string>Tile:</string>
+      <string>地形：</string>
      </property>
     </widget>
    </item>
@@ -185,10 +185,10 @@
         </sizepolicy>
        </property>
        <property name="toolTip">
-        <string>Adds the selected additional tile to the map tileset.</string>
+        <string>将所选可添加地形加入地图地形集。</string>
        </property>
        <property name="text">
-        <string>Add</string>
+        <string>添加</string>
        </property>
       </widget>
      </item>

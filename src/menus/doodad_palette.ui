@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Doodad Palette</string>
+   <string>装饰物调色板</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -27,7 +27,7 @@
    <item>
     <widget class="QLineEdit" name="search">
      <property name="placeholderText">
-      <string>Search</string>
+      <string>搜索</string>
      </property>
     </widget>
    </item>
@@ -46,7 +46,7 @@
       </size>
      </property>
      <property name="title">
-      <string>Brush</string>
+      <string>画刷</string>
      </property>
      <property name="flat">
       <bool>true</bool>
@@ -90,7 +90,7 @@
            </size>
           </property>
           <property name="toolTip">
-           <string>Sets the brush size to 1x1.</string>
+           <string>将画刷大小设为1x1</string>
           </property>
           <property name="text">
            <string>1</string>
@@ -112,7 +112,7 @@
            </size>
           </property>
           <property name="toolTip">
-           <string>Sets the brush size to 3x3.</string>
+           <string>将画刷大小设为3x3</string>
           </property>
           <property name="text">
            <string>2</string>
@@ -131,7 +131,7 @@
            </size>
           </property>
           <property name="toolTip">
-           <string>Sets the brush size to 5x5.</string>
+           <string>将画刷大小设为5x5</string>
           </property>
           <property name="text">
            <string>3</string>
@@ -150,7 +150,7 @@
            </size>
           </property>
           <property name="toolTip">
-           <string>Sets the brush size to 9x9.</string>
+           <string>将画刷大小设为9x9</string>
           </property>
           <property name="text">
            <string>5</string>
@@ -169,7 +169,7 @@
            </size>
           </property>
           <property name="toolTip">
-           <string>Sets the brush size to 15x15.</string>
+           <string>将画刷大小设为15x15</string>
           </property>
           <property name="text">
            <string>8</string>
@@ -188,7 +188,7 @@
            </size>
           </property>
           <property name="toolTip">
-           <string>Sets the brush size to 21x21.</string>
+           <string>将画刷大小设为21x21</string>
           </property>
           <property name="text">
            <string>11</string>
@@ -205,7 +205,7 @@
         <item>
          <widget class="QSpinBox" name="brushSize">
           <property name="toolTip">
-           <string>The current brush size</string>
+           <string>当前画刷大小</string>
           </property>
           <property name="readOnly">
            <bool>true</bool>
@@ -230,7 +230,7 @@
         <item>
          <widget class="QSlider" name="brushSizeSlider">
           <property name="toolTip">
-           <string>Sets the brush size.</string>
+           <string>设置画刷大小</string>
           </property>
           <property name="minimum">
            <number>1</number>
@@ -263,7 +263,7 @@
       <item>
        <widget class="QLabel" name="label">
         <property name="text">
-         <string>Shape</string>
+         <string>形状</string>
         </property>
        </widget>
       </item>
@@ -278,7 +278,7 @@
            </sizepolicy>
           </property>
           <property name="toolTip">
-           <string>Circular brush shape</string>
+           <string>圆形画刷</string>
           </property>
           <property name="text">
            <string/>
@@ -310,7 +310,7 @@
            </sizepolicy>
           </property>
           <property name="toolTip">
-           <string>Square brush shape</string>
+           <string>方形画刷</string>
           </property>
           <property name="text">
            <string/>
@@ -339,7 +339,7 @@
            </sizepolicy>
           </property>
           <property name="toolTip">
-           <string>Diamond brush shape</string>
+           <string>菱形画刷</string>
           </property>
           <property name="text">
            <string/>

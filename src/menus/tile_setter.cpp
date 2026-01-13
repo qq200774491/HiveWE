@@ -141,7 +141,7 @@ void TileSetter::update_available_tiles() const {
 }
 
 void TileSetter::existing_tile_clicked(QAbstractButton* button) const {
-	ui.selectedTileLabel->setText("Tile: " + button->property("tileName").toString());
+	ui.selectedTileLabel->setText("地形：" + button->property("tileName").toString());
 
 	const int index = selected_layout->indexOf(button);
 	ui.selectedShiftLeft->setEnabled(index != 0);
@@ -157,7 +157,7 @@ void TileSetter::existing_tile_clicked(QAbstractButton* button) const {
 }
 
 void TileSetter::available_tile_clicked(const QAbstractButton* button) const {
-	ui.additionalTileLabel->setText("Tile: " + button->property("tileName").toString());
+	ui.additionalTileLabel->setText("地形：" + button->property("tileName").toString());
 
 	// Check if tile was already in existing/modified tileset
 	bool tile_already_added = false;

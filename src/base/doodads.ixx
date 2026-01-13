@@ -115,11 +115,15 @@ export class Doodads {
 		return true;
 	}
 
-	void save(const Terrain& terrain) const {
+	void save(const Terrain& terrain, const MapInfo& info) const {
 		BinaryWriter writer;
+		const bool supports_skin = info.supports_skins() && !hierarchy.is_classic();
+		const uint32_t version = supports_skin ? write_version : 7;
+		const uint32_t subversion = supports_skin ? write_subversion : 9;
+
 		writer.write_string("W3do");
-		writer.write<uint32_t>(write_version);
-		writer.write<uint32_t>(write_subversion);
+		writer.write<uint32_t>(version);
+		writer.write<uint32_t>(subversion);
 
 		writer.write<uint32_t>(doodads.size());
 		for (auto&& i : doodads) {
@@ -129,18 +133,22 @@ export class Doodads {
 			writer.write<float>(i.angle);
 			writer.write<glm::vec3>(i.scale);
 
-			writer.write_string(i.skin_id);
+			if (supports_skin) {
+				writer.write_string(i.skin_id);
+			}
 
 			writer.write<uint8_t>(static_cast<int>(i.state));
 			writer.write<uint8_t>(i.life);
 
-			writer.write<int32_t>(i.item_table_pointer);
-			writer.write<uint32_t>(i.item_sets.size());
-			for (auto&& j : i.item_sets) {
-				writer.write<uint32_t>(j.items.size());
-				for (const auto& [chance, id] : j.items) {
-					writer.write_string(id);
-					writer.write<uint32_t>(chance);
+			if (version >= 8) {
+				writer.write<int32_t>(i.item_table_pointer);
+				writer.write<uint32_t>(i.item_sets.size());
+				for (auto&& j : i.item_sets) {
+					writer.write<uint32_t>(j.items.size());
+					for (const auto& [chance, id] : j.items) {
+						writer.write_string(id);
+						writer.write<uint32_t>(chance);
+					}
 				}
 			}
 

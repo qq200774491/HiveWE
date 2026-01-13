@@ -160,7 +160,7 @@ void TriggerEditor::item_clicked(const QModelIndex& index) {
 			jass_editor->setObjectName("jass_editor");
 			jass_editor->setText(QString::fromStdString(map->triggers.global_jass));
 
-			dock_tab->setWindowTitle("Map Header");
+			dock_tab->setWindowTitle("地图头");
 			dock_tab->setObjectName("0");
 			dock_tab->setIcon(model->data(index, Qt::DecorationRole).value<QIcon>());
 
@@ -300,15 +300,15 @@ void TriggerEditor::save_tab(ads::CDockWidget* tab) {
 
 void TriggerEditor::show_gui_trigger(QTreeWidget* edit, const Trigger& trigger) {
 	QTreeWidgetItem* events = new QTreeWidgetItem(edit);
-	events->setText(0, "Events");
+	events->setText(0, "事件");
 	events->setIcon(0, event_icon);
 
 	QTreeWidgetItem* conditions = new QTreeWidgetItem(edit);
-	conditions->setText(0, "Conditions");
+	conditions->setText(0, "条件");
 	conditions->setIcon(0, condition_icon);
 
 	QTreeWidgetItem* actions = new QTreeWidgetItem(edit);
-	actions->setText(0, "Actions");
+	actions->setText(0, "动作");
 	actions->setIcon(0, action_icon);
 
 	std::function<void(QTreeWidgetItem*, const ECA&)> recurse = [&](QTreeWidgetItem* parent, const ECA& i) {

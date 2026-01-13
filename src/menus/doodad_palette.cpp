@@ -55,7 +55,7 @@ DoodadPalette::DoodadPalette(QWidget* parent) : Palette(parent) {
 
 	map->brush = &brush;
 
-	ui.tileset->addItem("All Tilesets", '*');
+	ui.tileset->addItem("所有地形集", '*');
 	for (auto&& [key, value] : world_edit_data.section("TileSets")) {
 		ui.tileset->addItem(QString::fromStdString(value.front()), key.front());
 	}
@@ -93,9 +93,9 @@ DoodadPalette::DoodadPalette(QWidget* parent) : Palette(parent) {
 	ui.doodads->setModel(concat_table);
 
 	QRibbonSection* selection_section = new QRibbonSection;
-	selection_section->setText("Selection");
+	selection_section->setText("选择");
 
-	selection_mode->setText("Selection\nMode");
+	selection_mode->setText("选择\n模式");
 	selection_mode->setIcon(QIcon("data/icons/ribbon/select32x32.png"));
 	selection_mode->setCheckable(true);
 	selection_section->addWidget(selection_mode);
@@ -122,37 +122,37 @@ DoodadPalette::DoodadPalette(QWidget* parent) : Palette(parent) {
 	change_mode_parent = new QShortcut(Qt::Key_Space, parent, nullptr, nullptr, Qt::ShortcutContext::WindowShortcut);
 
 	QRibbonSection* placement_section = new QRibbonSection;
-	placement_section->setText("Placement");
+	placement_section->setText("放置");
 
 	QRibbonButton* random_rotation = new QRibbonButton;
-	random_rotation->setText("Random\nRotation");
-	random_rotation->setToolTip("Placed doodads will get a random rotation as long as their properties allow it");
+	random_rotation->setText("随机\n旋转");
+	random_rotation->setToolTip("放置装饰物时将随机旋转（在其属性允许的情况下）");
 	random_rotation->setIcon(QIcon("data/icons/ribbon/reset32x32.png"));
 	random_rotation->setCheckable(true);
 	random_rotation->setChecked(true);
 	placement_section->addWidget(random_rotation);
 
 	QRibbonButton* random_scale = new QRibbonButton;
-	random_scale->setText("Random\nScale");
-	random_scale->setToolTip("Placed doodads will get a random scale each time between their minScale and maxScale");
+	random_scale->setText("随机\n缩放");
+	random_scale->setToolTip("放置装饰物时将在最小/最大缩放之间随机缩放");
 	random_scale->setIcon(QIcon("data/icons/ribbon/scale32x32.png"));
 	random_scale->setCheckable(true);
 	random_scale->setChecked(true);
 	placement_section->addWidget(random_scale);
 
 	QRibbonButton* lock_height = new QRibbonButton;
-	lock_height->setText("Lock\nHeight");
-	lock_height->setToolTip("Locks the absolute height of selected doodads when moved");
+	lock_height->setText("锁定\n高度");
+	lock_height->setToolTip("移动时锁定所选装饰物的绝对高度");
 	lock_height->setIcon(QIcon("data/icons/ribbon/lock.png"));
 	lock_height->setCheckable(true);
 	placement_section->addWidget(lock_height);
 
 	QRibbonSection* variation_section = new QRibbonSection;
-	variation_section->setText("Variations");
+	variation_section->setText("变化");
 
 	QRibbonButton* random_variation = new QRibbonButton;
-	random_variation->setText("Random\nVariation");
-	random_variation->setToolTip("Placed doodads will get a random variation. You can control which ones on the right ->");
+	random_variation->setText("随机\n变化");
+	random_variation->setToolTip("放置装饰物时将随机变体，可在右侧控制");
 	random_variation->setIcon(QIcon("data/icons/ribbon/variation32x32.png"));
 	random_variation->setCheckable(true);
 	random_variation->setChecked(true);
@@ -160,21 +160,21 @@ DoodadPalette::DoodadPalette(QWidget* parent) : Palette(parent) {
 	variation_section->addWidget(variations);
 
 	QRibbonSection* flags_section = new QRibbonSection;
-	flags_section->setText("Flags");
+	flags_section->setText("标志");
 
 	QVBoxLayout* visibility_flags_layout = new QVBoxLayout;
 
 	QRadioButton* invisible_non_solid = new QRadioButton;
-	invisible_non_solid->setText("Invisible non solid");
-	invisible_non_solid->setToolTip("Invisible and can units walk through");
+	invisible_non_solid->setText("不可见且可穿行");
+	invisible_non_solid->setToolTip("不可见，单位可穿行");
 
 	QRadioButton* visible_non_solid = new QRadioButton;
-	visible_non_solid->setText("Visible non solid");
-	visible_non_solid->setToolTip("Visible but units can walk through");
+	visible_non_solid->setText("可见且可穿行");
+	visible_non_solid->setToolTip("可见，单位可穿行");
 
 	QRadioButton* visible_solid = new QRadioButton;
-	visible_solid->setText("Visible solid");
-	visible_solid->setToolTip("Visible and units cannot walk through");
+	visible_solid->setText("可见且不可穿行");
+	visible_solid->setToolTip("可见，单位不可穿行");
 	visible_solid->setChecked(true);
 
 	visibility_flags_layout->addWidget(invisible_non_solid);
@@ -185,16 +185,16 @@ DoodadPalette::DoodadPalette(QWidget* parent) : Palette(parent) {
 	flags_section->addLayout(visibility_flags_layout);
 
 	current_selection_section = new QRibbonSection;
-	current_selection_section->setText("Current Selection");
+	current_selection_section->setText("当前选择");
 	current_selection_section->setEnabled(false);
 
 	QFormLayout* scaling_layout = new QFormLayout;
 	scaling_layout->setSpacing(1);
 	scaling_layout->setHorizontalSpacing(5);
 
-	scaling_layout->addRow("x scale:", x_scale);
-	scaling_layout->addRow("y scale:", y_scale);
-	scaling_layout->addRow("z scale:", z_scale);
+	scaling_layout->addRow("X 缩放：", x_scale);
+	scaling_layout->addRow("Y 缩放：", y_scale);
+	scaling_layout->addRow("Z 缩放：", z_scale);
 
 	QVBoxLayout* rotation_layout = new QVBoxLayout;
 
@@ -220,14 +220,14 @@ DoodadPalette::DoodadPalette(QWidget* parent) : Palette(parent) {
 	degrees_layout->addWidget(degrees270, 1, 1);
 
 	QHBoxLayout* rotation_sub = new QHBoxLayout;
-	rotation_sub->addWidget(new QLabel("Angle:"));
+	rotation_sub->addWidget(new QLabel("角度："));
 	rotation_sub->addSpacing(5);
 	rotation_sub->addWidget(rotation);
 	rotation_layout->addLayout(rotation_sub);
 	rotation_layout->addLayout(degrees_layout);
 
 	QRibbonButton* average_z = new QRibbonButton;
-	average_z->setText("Group\nHeight  ");
+	average_z->setText("组合\n高度");
 	average_z->setIcon(QIcon("data/icons/ribbon/height.png"));
 	average_z->addAction(group_height_minimum);
 	average_z->addAction(group_height_average);
@@ -238,16 +238,16 @@ DoodadPalette::DoodadPalette(QWidget* parent) : Palette(parent) {
 	height_layout->setSpacing(1);
 	height_layout->setHorizontalSpacing(5);
 
-	height_layout->addRow("Absolute Height:", absolute_height);
-	height_layout->addRow("Relative Height:", relative_height);
+	height_layout->addRow("绝对高度：", absolute_height);
+	height_layout->addRow("相对高度：", relative_height);
 
 	QSmallRibbonButton* edit_in_oe = new QSmallRibbonButton;
-	edit_in_oe->setText("Edit in OE");
+	edit_in_oe->setText("在对象编辑器中编辑");
 	edit_in_oe->setIcon(QIcon("data/icons/ribbon/objecteditor32x32.png"));
 
 	QSmallRibbonButton* select_in_palette = new QSmallRibbonButton;
-	select_in_palette->setText("Select in Palette");
-	select_in_palette->setToolTip("Or click the doodad with middle mouse button");
+	select_in_palette->setText("在调色板中选择");
+	select_in_palette->setToolTip("或用鼠标中键点击装饰物");
 	select_in_palette->setIcon(QIcon("data/icons/ribbon/doodads32x32.png"));
 
 	QVBoxLayout* info_layout = new QVBoxLayout;
@@ -256,8 +256,8 @@ DoodadPalette::DoodadPalette(QWidget* parent) : Palette(parent) {
 	info_layout->addWidget(select_in_palette);
 
 	QSmallRibbonButton* merge_selection = new QSmallRibbonButton;
-	merge_selection->setText("Merge MDXs");
-	merge_selection->setToolTip("Will merge all the selected doodad/destructables into a single MDX");
+	merge_selection->setText("合并MDX");
+	merge_selection->setToolTip("将所选装饰物/可破坏物合并为一个MDX");
 	merge_selection->setIcon(QIcon("data/icons/doodad_palette/merge.png"));
 
 	current_selection_section->addLayout(scaling_layout);
@@ -416,9 +416,9 @@ DoodadPalette::DoodadPalette(QWidget* parent) : Palette(parent) {
 
 		const fs::path file_name = QFileDialog::getSaveFileName(
 									   this,
-									   "Choose Save Location",
+									   "选择保存位置",
 									   settings.value("openDirectory").toString(),
-									   "Warcraft III Model (*.mdx)"
+									   "魔兽争霸III模型 (*.mdx)"
 		)
 									   .toStdString();
 
@@ -445,7 +445,7 @@ DoodadPalette::DoodadPalette(QWidget* parent) : Palette(parent) {
 		std::ofstream outfile(file_name, std::ios::binary | std::ios::out);
 
 		if (!outfile) {
-			throw std::runtime_error("Error writing merged file ");
+			throw std::runtime_error("写入合并文件失败 ");
 		}
 
 		outfile.write(reinterpret_cast<char const*>(writer.buffer.data()), writer.buffer.size());
@@ -484,7 +484,7 @@ bool DoodadPalette::event(QEvent* e) {
 		change_mode_this->setEnabled(true);
 		change_mode_parent->setEnabled(true);
 		map->brush = &brush;
-		emit ribbon_tab_requested(ribbon_tab, "Doodad Palette");
+		emit ribbon_tab_requested(ribbon_tab, "装饰物调色板");
 	}
 
 	return QWidget::event(e);
@@ -598,35 +598,35 @@ void DoodadPalette::update_selection_info() {
 			same_relative_height = same_relative_height && std::abs(other_relative_height - first_relative_height) < 0.001f;
 		}
 
-		x_scale->setText(same_x ? QString::number(doodad.scale.x) : "Various");
-		y_scale->setText(same_y ? QString::number(doodad.scale.y) : "Various");
-		z_scale->setText(same_z ? QString::number(doodad.scale.z) : "Various");
+		x_scale->setText(same_x ? QString::number(doodad.scale.x) : "多种");
+		y_scale->setText(same_y ? QString::number(doodad.scale.y) : "多种");
+		z_scale->setText(same_z ? QString::number(doodad.scale.z) : "多种");
 
 		if (same_angle) {
 			const auto text = rotation->text();
-			if (text.isEmpty() || text == "Various" || text.toFloat() != glm::degrees(doodad.angle)) {
+			if (text.isEmpty() || text == "多种" || text.toFloat() != glm::degrees(doodad.angle)) {
 				rotation->setText(toString(glm::degrees(doodad.angle)));
 			}
 		} else {
-			rotation->setText("Various");
+			rotation->setText("多种");
 		}
 
 		if (same_absolute_height) {
 			const auto text = absolute_height->text();
-			if (text.isEmpty() || text == "Various" || text.toFloat() != doodad.position.z) {
+			if (text.isEmpty() || text == "多种" || text.toFloat() != doodad.position.z) {
 				absolute_height->setText(toString(doodad.position.z));
 			}
 		} else {
-			absolute_height->setText("Various");
+			absolute_height->setText("多种");
 		}
 
 		if (same_relative_height) {
 			const auto text = relative_height->text();
-			if (text.isEmpty() || text == "Various" || text.toFloat() != first_relative_height) {
+			if (text.isEmpty() || text == "多种" || text.toFloat() != first_relative_height) {
 				relative_height->setText(toString(first_relative_height));
 			}
 		} else {
-			relative_height->setText("Various");
+			relative_height->setText("多种");
 		}
 
 		// Set the name
@@ -639,7 +639,7 @@ void DoodadPalette::update_selection_info() {
 				selection_name->setText(name);
 			}
 		} else {
-			selection_name->setText("Various");
+			selection_name->setText("多种");
 		}
 	}
 }

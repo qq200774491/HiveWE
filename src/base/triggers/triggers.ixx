@@ -351,11 +351,11 @@ export struct TriggerParameter {
 		function,
 		string
 	};
-	Type type;
-	int unknown;
+	Type type = Type::invalid;
+	int unknown = 0;
 	/// Unused when has_sub_parameter is true, sometimes contains garbage
 	std::string value;
-	bool has_sub_parameter;
+	bool has_sub_parameter = false;
 	ECA sub_parameter;
 	/// Only used when Type::function and has_sub_parameter=true
 	// TriggerSubParameter sub_parameter;
@@ -385,7 +385,7 @@ export struct Trigger {
 export struct TriggerVariable {
 	std::string name;
 	std::string type;
-	uint32_t unknown;
+	uint32_t unknown = 0;
 	bool is_array;
 	int array_size = 0;
 	bool is_initialized;
@@ -414,6 +414,10 @@ export class Triggers {
 	int unknown1 = 0;
 	int unknown2 = 0;
 	int trig_def_ver = 2;
+	uint32_t wtg_version = write_version;
+	uint32_t wtg_sub_version = write_sub_version;
+	uint32_t wct_version = write_version;
+	uint32_t wct_sub_version = 1;
 
   public:
 	ini::INI trigger_strings;
@@ -503,7 +507,7 @@ export class Triggers {
 		}
 	}
 
-	void print_parameter_structure(BinaryWriter& writer, const TriggerParameter& parameter) const {
+	void print_parameter_structure(BinaryWriter& writer, const TriggerParameter& parameter, uint32_t version) const {
 		writer.write<uint32_t>(static_cast<int>(parameter.type));
 		writer.write_c_string(parameter.value);
 		writer.write<uint32_t>(parameter.has_sub_parameter);
@@ -513,18 +517,53 @@ export class Triggers {
 			writer.write_c_string(parameter.sub_parameter.name);
 			writer.write<uint32_t>(!parameter.sub_parameter.parameters.empty());
 			for (const auto& i : parameter.sub_parameter.parameters) {
-				print_parameter_structure(writer, i);
+				print_parameter_structure(writer, i, version);
 			}
+		}
 
+		if (version == 4) {
+			if (parameter.type == TriggerParameter::Type::function) {
+				writer.write<uint32_t>(0);
+				return;
+			}
+			writer.write<uint32_t>(parameter.is_array);
+			if (parameter.is_array) {
+				print_parameter_structure(writer, parameter.parameters.front(), version);
+			}
+			return;
+		}
+
+		if (parameter.has_sub_parameter) {
 			writer.write<uint32_t>(parameter.unknown);
 		}
 		writer.write<uint32_t>(parameter.is_array);
 		if (parameter.is_array) {
-			print_parameter_structure(writer, parameter.parameters.front());
+			print_parameter_structure(writer, parameter.parameters.front(), version);
 		}
 	}
 
-	void print_eca_structure(BinaryWriter& writer, const ECA& eca, bool is_child) const {
+	bool use_pre31_format() const {
+		if (wtg_version == 4 || wtg_version == 7) {
+			return true;
+		}
+		return hierarchy.is_classic();
+	}
+
+	uint32_t resolved_pre31_wtg_version() const {
+		if (wtg_version == 4 || wtg_version == 7) {
+			return wtg_version;
+		}
+		return 7;
+	}
+
+	uint32_t resolved_pre31_wct_version() const {
+		if (wct_version == 0 || wct_version == 1) {
+			return wct_version;
+		}
+		return 1;
+	}
+
+	void print_eca_structure(BinaryWriter& writer, const ECA& eca, bool is_child, uint32_t version) const {
 		writer.write<uint32_t>(static_cast<int>(eca.type));
 		if (is_child) {
 			writer.write<uint32_t>(eca.group);
@@ -533,12 +572,14 @@ export class Triggers {
 		writer.write_c_string(eca.name);
 		writer.write<uint32_t>(eca.enabled);
 		for (const auto& i : eca.parameters) {
-			print_parameter_structure(writer, i);
+			print_parameter_structure(writer, i, version);
 		}
 
-		writer.write<uint32_t>(eca.ecas.size());
-		for (const auto& i : eca.ecas) {
-			print_eca_structure(writer, i, true);
+		if (version == 7) {
+			writer.write<uint32_t>(eca.ecas.size());
+			for (const auto& i : eca.ecas) {
+				print_eca_structure(writer, i, true, version);
+			}
 		}
 	}
 
@@ -581,6 +622,7 @@ export class Triggers {
 		}
 
 		const uint32_t version = reader.read<uint32_t>();
+		wtg_version = version;
 		if (version == 0x80000004)
 			load_version_31(reader, version);
 		else if (version == 4 || version == 7)
@@ -593,6 +635,7 @@ export class Triggers {
 
 	void load_version_31(BinaryReader& reader, uint32_t version) {
 		uint32_t sub_version = reader.read<uint32_t>();
+		wtg_sub_version = sub_version;
 		if (sub_version != 7 && sub_version != 4) {
 			std::print("Unknown 1.31 WTG subformat! Trying anyway.\n");
 		}
@@ -701,6 +744,7 @@ export class Triggers {
 
 	void load_version_pre31(BinaryReader& reader, uint32_t version) {
 		std::print("Importing pre-1.31 trigger format\n");
+		wtg_sub_version = version;
 
 		categories.resize(reader.read<uint32_t>());
 		for (auto& i : categories) {
@@ -780,6 +824,7 @@ export class Triggers {
 		BinaryReader reader = hierarchy.map_file_read("war3map.wct").value();
 
 		const uint32_t version = reader.read<uint32_t>();
+		wct_version = version;
 		if (version != 0x80000004) {
 			if (version == 1 || version == 0) {
 				if (version == 1) {
@@ -787,6 +832,7 @@ export class Triggers {
 					global_jass = reader.read_string(reader.read<uint32_t>());
 				}
 				reader.advance(4);
+				wct_sub_version = 0;
 				for (auto&& i : triggers) {
 					const uint32_t size = reader.read<uint32_t>();
 					if (size > 0) {
@@ -800,6 +846,7 @@ export class Triggers {
 		}
 
 		const int sub_version = reader.read<uint32_t>();
+		wct_sub_version = sub_version;
 		if (sub_version != 1 && sub_version != 0) {
 			std::print("Unknown WCT 1.31 subformat\n");
 		}
@@ -823,6 +870,81 @@ export class Triggers {
 	}
 
 	void save() const {
+		if (use_pre31_format()) {
+			const uint32_t version = resolved_pre31_wtg_version();
+			BinaryWriter writer;
+			writer.write_string("WTG!");
+			writer.write<uint32_t>(version);
+
+			int variable_category_id = -1;
+			for (const auto& i : variables) {
+				if (variable_category_id == -1) {
+					variable_category_id = i.parent_id;
+				} else if (variable_category_id != i.parent_id) {
+					variable_category_id = -1;
+					break;
+				}
+			}
+
+			std::vector<const TriggerCategory*> categories_to_write;
+			for (const auto& i : categories) {
+				if (i.classifier != Classifier::category) {
+					continue;
+				}
+				if (variable_category_id != -1 && i.id == variable_category_id) {
+					continue;
+				}
+				categories_to_write.push_back(&i);
+			}
+
+			writer.write<uint32_t>(categories_to_write.size());
+			for (const auto* i : categories_to_write) {
+				const uint32_t category_id = (i->id == -2) ? 0u : static_cast<uint32_t>(i->id);
+				writer.write<uint32_t>(category_id);
+				writer.write_c_string(i->name);
+				if (version == 7) {
+					writer.write<uint32_t>(i->is_comment);
+				}
+			}
+
+			writer.write<uint32_t>(0);
+
+			writer.write<uint32_t>(variables.size());
+			for (const auto& i : variables) {
+				writer.write_c_string(i.name);
+				writer.write_c_string(i.type);
+				writer.write<uint32_t>(i.unknown);
+				writer.write<uint32_t>(i.is_array);
+				if (version == 7) {
+					writer.write<uint32_t>(i.array_size);
+				}
+				writer.write<uint32_t>(i.is_initialized);
+				writer.write_c_string(i.initial_value);
+			}
+
+			writer.write<uint32_t>(triggers.size());
+			for (const auto& i : triggers) {
+				writer.write_c_string(i.name);
+				writer.write_c_string(i.description);
+				if (version == 7) {
+					writer.write<uint32_t>(i.is_comment);
+				}
+				writer.write<uint32_t>(i.is_enabled);
+				writer.write<uint32_t>(i.is_script);
+				writer.write<uint32_t>(!i.initially_on);
+				writer.write<uint32_t>(i.run_on_initialization);
+				const uint32_t parent_id = (i.parent_id == -2) ? 0u : static_cast<uint32_t>(i.parent_id);
+				writer.write<uint32_t>(parent_id);
+				writer.write<uint32_t>(i.ecas.size());
+				for (const auto& eca : i.ecas) {
+					print_eca_structure(writer, eca, false, version);
+				}
+			}
+
+			hierarchy.map_file_write("war3map.wtg", writer.buffer);
+			return;
+		}
+
 		BinaryWriter writer;
 		writer.write_string("WTG!");
 		writer.write<uint32_t>(write_version);
@@ -891,7 +1013,7 @@ export class Triggers {
 			writer.write<uint32_t>(i.parent_id);
 			writer.write<uint32_t>(i.ecas.size());
 			for (const auto& eca : i.ecas) {
-				print_eca_structure(writer, eca, false);
+				print_eca_structure(writer, eca, false, wtg_sub_version);
 			}
 		}
 
@@ -907,17 +1029,48 @@ export class Triggers {
 
 	/// Can be jass or lua depending on the map
 	void save_scripts() const {
+		if (use_pre31_format()) {
+			const uint32_t version = resolved_pre31_wct_version();
+			BinaryWriter writer;
+			writer.write<uint32_t>(version);
+
+			if (version == 1) {
+				writer.write_c_string(global_jass_comment);
+				if (global_jass.empty()) {
+					writer.write<uint32_t>(0);
+				} else {
+					writer.write<uint32_t>(global_jass.size() + (global_jass.back() == '\0' ? 0 : 1));
+					writer.write_c_string(global_jass);
+				}
+			}
+
+			writer.write<uint32_t>(triggers.size());
+			for (const auto& i : triggers) {
+				if (i.custom_text.empty()) {
+					writer.write<uint32_t>(0);
+				} else {
+					writer.write<uint32_t>(i.custom_text.size() + (i.custom_text.back() == '\0' ? 0 : 1));
+					writer.write_c_string(i.custom_text);
+				}
+			}
+
+			hierarchy.map_file_write("war3map.wct", writer.buffer);
+			return;
+		}
+
 		BinaryWriter writer;
 
 		writer.write<uint32_t>(write_version);
-		writer.write<uint32_t>(1);
+		writer.write<uint32_t>(wct_sub_version);
 
-		writer.write_c_string(global_jass_comment);
-		if (global_jass.empty()) {
-			writer.write<uint32_t>(0);
-		} else {
-			writer.write<uint32_t>(global_jass.size() + (global_jass.back() == '\0' ? 0 : 1));
-			writer.write_c_string(global_jass);
+		if (wct_sub_version == 1) {
+			writer.write_c_string(global_jass_comment);
+			if (global_jass.empty()) {
+				writer.write<uint32_t>(0);
+			} else {
+				writer.write<uint32_t>(global_jass.size() + (global_jass.back() == '\0' ? 0 : 1));
+				writer.write_c_string(global_jass);
+			}
 		}
 
 		// Custom text (jass/lua) needs to be saved in the order they appear in the hierarchy

@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>Minimap</string>
+   <string>小地图</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="leftMargin">
@@ -47,7 +47,7 @@
       <enum>QFrame::Plain</enum>
      </property>
      <property name="text">
-      <string>Image</string>
+      <string>图像</string>
      </property>
     </widget>
    </item>

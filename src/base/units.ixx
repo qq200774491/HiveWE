@@ -216,12 +216,16 @@ public:
 		}
 	}
 
-	void save(const Terrain& terrain) const {
+	void save(const Terrain& terrain, const MapInfo& info) const {
 		BinaryWriter writer;
 
+		const bool supports_skin = info.supports_skins() && !hierarchy.is_classic();
+		const uint32_t version = supports_skin ? write_version : 7;
+		const uint32_t subversion = supports_skin ? write_subversion : 9;
+
 		writer.write_string("W3do");
-		writer.write<uint32_t>(write_version);
-		writer.write<uint32_t>(write_subversion);
+		writer.write<uint32_t>(version);
+		writer.write<uint32_t>(subversion);
 
 		writer.write<uint32_t>(units.size() + items.size());
 
@@ -233,7 +237,9 @@ public:
 				writer.write<float>(i.angle);
 				writer.write<glm::vec3>(i.scale * 128.f);
 
-				writer.write_string(i.skin_id);
+				if (supports_skin) {
+					writer.write_string(i.skin_id);
+				}
 
 				writer.write<uint8_t>(i.flags);
 
@@ -245,7 +251,9 @@ public:
 				writer.write<uint32_t>(i.health);
 				writer.write<uint32_t>(i.mana);
 
-				writer.write<uint32_t>(i.item_table_pointer);
+				if (subversion >= 11) {
+					writer.write<uint32_t>(i.item_table_pointer);
+				}
 
 				writer.write<uint32_t>(i.item_sets.size());
 				for (auto&& j : i.item_sets) {
@@ -259,9 +267,11 @@ public:
 				writer.write<uint32_t>(i.gold);
 				writer.write<float>(i.target_acquisition);
 				writer.write<uint32_t>(i.level);
-				writer.write<uint32_t>(i.strength);
-				writer.write<uint32_t>(i.agility);
-				writer.write<uint32_t>(i.intelligence);
+				if (subversion >= 11) {
+					writer.write<uint32_t>(i.strength);
+					writer.write<uint32_t>(i.agility);
+					writer.write<uint32_t>(i.intelligence);
+				}
 
 
 				writer.write<uint32_t>(i.items.size());

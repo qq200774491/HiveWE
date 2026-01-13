@@ -11,12 +11,12 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Trigger Editor</string>
+   <string>触发器编辑器</string>
   </property>
   <widget class="QWidget" name="centralwidget"/>
   <widget class="QToolBar" name="toolBar">
    <property name="windowTitle">
-    <string>toolBar</string>
+    <string>工具栏</string>
    </property>
    <property name="iconSize">
     <size>
@@ -44,10 +44,10 @@
      <normaloff>Data/Icons/Ribbon/triggereditor32x32.png</normaloff>Data/Icons/Ribbon/triggereditor32x32.png</iconset>
    </property>
    <property name="text">
-    <string>GenerateScript</string>
+    <string>生成脚本</string>
    </property>
    <property name="toolTip">
-    <string>Generate map script and check for errors</string>
+    <string>生成地图脚本并检查错误</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+F10</string>
@@ -55,42 +55,42 @@
   </action>
   <action name="actionCreateGuiTrigger">
    <property name="text">
-    <string>Create Gui Trigger</string>
+    <string>新建GUI触发器</string>
    </property>
    <property name="toolTip">
-    <string>Creates a GUI trigger</string>
+    <string>创建GUI触发器</string>
    </property>
   </action>
   <action name="actionCreateJassTrigger">
    <property name="text">
-    <string>Create Jass Trigger</string>
+    <string>新建JASS触发器</string>
    </property>
    <property name="toolTip">
-    <string>Creates a Jass Trigger</string>
+    <string>创建JASS触发器</string>
    </property>
   </action>
   <action name="actionCreateComment">
    <property name="text">
-    <string>Create Comment</string>
+    <string>新建注释</string>
    </property>
    <property name="toolTip">
-    <string>Creates a Comment</string>
+    <string>创建注释</string>
    </property>
   </action>
   <action name="actionCreateVariable">
    <property name="text">
-    <string>actionCreateVariable</string>
+    <string>新建变量</string>
    </property>
    <property name="toolTip">
-    <string>Create a global variable</string>
+    <string>创建全局变量</string>
    </property>
   </action>
   <action name="actionCreateCategory">
    <property name="text">
-    <string>Create Category</string>
+    <string>新建分类</string>
    </property>
    <property name="toolTip">
-    <string>Create a category</string>
+    <string>创建分类</string>
    </property>
   </action>
  </widget>

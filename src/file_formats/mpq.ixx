@@ -142,7 +142,8 @@ namespace mpq {
 		File file_open(const fs::path& path) const {
 			File file;
 #ifdef WIN32
-			const bool opened = SFileOpenFileEx(handle, fs::weakly_canonical(path).string().c_str(), 0, &file.handle);
+			const std::string open_path = path.is_absolute() ? fs::weakly_canonical(path).string() : path.string();
+			const bool opened = SFileOpenFileEx(handle, open_path.c_str(), 0, &file.handle);
 #else
 			const bool opened = SFileOpenFileEx(handle, path.string().c_str(), 0, &file.handle);
 #endif
@@ -176,7 +177,8 @@ namespace mpq {
 
 		bool file_exists(const fs::path& path) const {
 #ifdef WIN32
-			return SFileHasFile(handle, fs::weakly_canonical(path).string().c_str());
+			const std::string open_path = path.is_absolute() ? fs::weakly_canonical(path).string() : path.string();
+			return SFileHasFile(handle, open_path.c_str());
 #else
 			return SFileHasFile(handle, path.string().c_str());
 #endif

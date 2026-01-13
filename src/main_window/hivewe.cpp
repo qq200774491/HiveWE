@@ -44,8 +44,8 @@ HiveWE::HiveWE(QWidget* parent)
 	fs::path directory = find_warcraft_directory();
 
 	QSettings settings;
-	while (!hierarchy.open_casc(directory)) {
-		directory = QFileDialog::getExistingDirectory(this, "Select Warcraft Directory", "/home", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks).toStdWString();
+	while (!hierarchy.open_game_data(directory)) {
+		directory = QFileDialog::getExistingDirectory(this, "选择魔兽目录", "/home", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks).toStdWString();
 		if (directory == "") {
 			exit(EXIT_SUCCESS);
 		}
@@ -235,7 +235,7 @@ HiveWE::HiveWE(QWidget* parent)
 void HiveWE::load_folder() {
 	QSettings settings;
 
-	QString folder_name = QFileDialog::getExistingDirectory(this, "Open Map Directory",
+	QString folder_name = QFileDialog::getExistingDirectory(this, "打开地图目录",
 															settings.value("openDirectory", QDir::current().path()).toString(),
 															QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
 
@@ -248,11 +248,11 @@ void HiveWE::load_folder() {
 	fs::path directory = folder_name.toStdString();
 
 	if (!fs::exists(directory / "war3map.w3i")) {
-		QMessageBox::information(this, "Opening map failed", "Opening the map failed. Select a map that is saved in folder mode or use the Open Map (MPQ) option");
+		QMessageBox::information(this, "打开地图失败", "打开地图失败。请选择已保存为文件夹模式的地图，或使用“打开地图（MPQ）”。");
 		return;
 	}
 
-	QMessageBox* loading_box = new QMessageBox(QMessageBox::Icon::Information, "Loading Map", "Loading " + QString::fromStdString(directory.filename().string()));
+	QMessageBox* loading_box = new QMessageBox(QMessageBox::Icon::Information, "加载地图", "正在加载 " + QString::fromStdString(directory.filename().string()));
 	loading_box->show();
 
 	window_handler.close_all();
@@ -276,9 +276,9 @@ void HiveWE::load_mpq() {
 	QSettings settings;
 
 	// Choose an MPQ
-	QString file_name = QFileDialog::getOpenFileName(this, "Open File",
+	QString file_name = QFileDialog::getOpenFileName(this, "打开文件",
 													 settings.value("openDirectory", QDir::current().path()).toString(),
-													 "Warcraft III Scenario (*.w3m *.w3x)");
+													 "魔兽争霸III地图 (*.w3m *.w3x)");
 
 	if (file_name.isEmpty()) {
 		return;
@@ -291,13 +291,13 @@ void HiveWE::load_mpq() {
 	mpq::MPQ mpq;
 	bool opened = mpq.open(mpq_path);
 	if (!opened) {
-		const auto message = std::format("Opening the map archive failed. It might be opened in another program.\nError Code {}", GetLastError());
-		QMessageBox::critical(this, "Opening map failed", QString::fromStdString(message));
+		const auto message = std::format("打开地图档案失败，可能正在被其他程序占用。\n错误码 {}", GetLastError());
+		QMessageBox::critical(this, "打开地图失败", QString::fromStdString(message));
 		return;
 	}
 
 	fs::path unpack_location = QFileDialog::getExistingDirectory(
-								   this, "Choose Unpacking Location",
+								   this, "选择解包位置",
 								   settings.value("openDirectory", QDir::current().path()).toString(),
 								   QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks)
 								   .toStdString();
@@ -311,13 +311,13 @@ void HiveWE::load_mpq() {
 	try {
 		fs::create_directory(final_directory);
 	} catch (std::filesystem::filesystem_error& e) {
-		QMessageBox::critical(this, "Error creating directory", "Failed to create the directory to unpack into with error:\n" + QString::fromStdString(e.what()), QMessageBox::StandardButton::Ok, QMessageBox::StandardButton::Ok);
+		QMessageBox::critical(this, "创建目录失败", "创建用于解包的目录失败，错误：\n" + QString::fromStdString(e.what()), QMessageBox::StandardButton::Ok, QMessageBox::StandardButton::Ok);
 		return;
 	}
 
 	bool unpacked = mpq.unpack(final_directory);
 	if (!unpacked) {
-		QMessageBox::critical(this, "Unpacking failed", "There was an error unpacking the archive.");
+		QMessageBox::critical(this, "解包失败", "解包过程中发生错误。");
 		std::println("{}", GetLastError());
 		return;
 	}
@@ -344,7 +344,7 @@ void HiveWE::save_as() {
 	QSettings settings;
 	const QString directory = settings.value("openDirectory", QDir::current().path()).toString() + "/" + QString::fromStdString(map->name);
 
-	fs::path file_name = QFileDialog::getExistingDirectory(this, "Choose Save Location",
+	fs::path file_name = QFileDialog::getExistingDirectory(this, "选择保存位置",
 														   settings.value("openDirectory", QDir::current().path()).toString(),
 														   QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks)
 							 .toStdString();
@@ -369,7 +369,7 @@ void HiveWE::save_as() {
 void HiveWE::export_mpq() {
 	QSettings settings;
 	const QString directory = settings.value("openDirectory", QDir::current().path()).toString() + "/" + QString::fromStdString(map->filesystem_path.filename().string());
-	std::wstring file_name = QFileDialog::getSaveFileName(this, "Export Map to MPQ", directory, "Warcraft III Scenario (*.w3x)").toStdWString();
+	std::wstring file_name = QFileDialog::getSaveFileName(this, "导出地图为MPQ", directory, "魔兽争霸III地图 (*.w3x)").toStdWString();
 
 	if (file_name.empty()) {
 		return;
@@ -385,7 +385,7 @@ void HiveWE::export_mpq() {
 	HANDLE handle;
 	bool open = SFileCreateArchive(file_name.c_str(), MPQ_CREATE_LISTFILE | MPQ_CREATE_ATTRIBUTES, file_count, &handle);
 	if (!open) {
-		QMessageBox::critical(this, "Exporting failed", "There was an error creating the archive.");
+		QMessageBox::critical(this, "导出失败", "创建档案时发生错误。");
 		std::println("{}", GetLastError());
 		return;
 	}
@@ -408,7 +408,10 @@ void HiveWE::play_test() {
 		return;
 	}
 	QProcess* warcraft = new QProcess;
-	const QString warcraft_path = QString::fromStdString(fs::canonical(hierarchy.root_directory / "x86_64" / "Warcraft III.exe").string());
+	const fs::path exe_path = hierarchy.is_classic()
+		? (hierarchy.root_directory / "Warcraft III.exe")
+		: (hierarchy.root_directory / "x86_64" / "Warcraft III.exe");
+	const QString warcraft_path = QString::fromStdString(fs::canonical(exe_path).string());
 	QStringList arguments;
 	arguments << "-launch"
 			  << "-loadfile" << QString::fromStdString(fs::canonical(map->filesystem_path).string());
@@ -421,7 +424,7 @@ void HiveWE::play_test() {
 }
 
 void HiveWE::closeEvent(QCloseEvent* event) {
-	int choice = QMessageBox::question(this, "Do you want to quit?", "Are you sure you want to quit?", QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
+	int choice = QMessageBox::question(this, "要退出吗？", "确定要退出吗？", QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
 
 	if (choice == QMessageBox::Yes) {
 		QApplication::closeAllWindows();
@@ -445,11 +448,11 @@ void HiveWE::switch_warcraft() {
 	QSettings settings;
 	fs::path directory;
 	do {
-		directory = QFileDialog::getExistingDirectory(this, "Select Warcraft Directory", "/home", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks).toStdWString();
+		directory = QFileDialog::getExistingDirectory(this, "选择魔兽目录", "/home", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks).toStdWString();
 		if (directory == "") {
 			directory = settings.value("warcraftDirectory").toString().toStdString();
 		}
-	} while (!hierarchy.open_casc(directory));
+	} while (!hierarchy.open_game_data(directory));
 
 	if (directory != hierarchy.warcraft_directory) {
 		settings.setValue("warcraftDirectory", QString::fromStdString(directory.string()));
@@ -458,11 +461,11 @@ void HiveWE::switch_warcraft() {
 
 // ToDo move to terrain class?
 void HiveWE::import_heightmap() {
-	QMessageBox::information(this, "Heightmap information", "Will read the red channel and map this onto the range -16 to +16");
+	QMessageBox::information(this, "高度图说明", "将读取红色通道并映射到 -16 到 +16 的范围");
 	QSettings settings;
 	const QString directory = settings.value("openDirectory", QDir::current().path()).toString() + "/" + QString::fromStdString(map->filesystem_path.filename().string());
 
-	QString file_name = QFileDialog::getOpenFileName(this, "Open Heightmap Image", directory);
+	QString file_name = QFileDialog::getOpenFileName(this, "打开高度图", directory);
 
 	if (file_name == "") {
 		return;
@@ -474,7 +477,7 @@ void HiveWE::import_heightmap() {
 	uint8_t* image_data = SOIL_load_image(file_name.toStdString().c_str(), &width, &height, &channels, SOIL_LOAD_AUTO);
 
 	if (width != map->terrain.width || height != map->terrain.height) {
-		QMessageBox::warning(this, "Incorrect Image Size", QString("Image Size: %1x%2 does not match terrain size: %3x%4").arg(QString::number(width), QString::number(height), QString::number(map->terrain.width), QString::number(map->terrain.height)));
+		QMessageBox::warning(this, "图像尺寸不正确", QString("图像尺寸：%1x%2 与地形尺寸：%3x%4 不匹配").arg(QString::number(width), QString::number(height), QString::number(map->terrain.width), QString::number(map->terrain.height)));
 		return;
 	}
 

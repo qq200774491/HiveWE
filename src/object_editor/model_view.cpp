@@ -25,7 +25,7 @@ ModelView::ModelView(QWidget* parent) : QWidget(parent) {
 
 	open_in_model_editor->setIcon(QIcon("data/icons/ribbon/model_editor.png"));
 	open_in_model_editor->setIconSize(QSize(20, 20));
-	open_in_model_editor->setToolTip("Open in Model Editor");
+open_in_model_editor->setToolTip("在模型编辑器中打开");
 
 	QHBoxLayout* hlayout = new QHBoxLayout;
 	hlayout->addWidget(new QLabel("Path"));
@@ -51,7 +51,7 @@ ModelView::ModelView(QWidget* parent) : QWidget(parent) {
 
 		const auto opened = model_editor->open_model(path, false);
 		if (!opened) {
-			QMessageBox::critical(this, "Error opening model", QString::fromStdString(std::format("Failed to open model with: {}", opened.error())));
+			QMessageBox::critical(this, "打开模型失败", QString::fromStdString(std::format("无法打开模型：{}", opened.error())));
 		}
 	});
 }

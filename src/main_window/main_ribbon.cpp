@@ -6,48 +6,48 @@ MainRibbon::MainRibbon(QWidget* parent) : QRibbon(parent) {
 
 	// Undo/Redo History
 	QRibbonSection* history_section = new QRibbonSection;
-	history_section->setText("History");
+	history_section->setText("历史");
 
 	undo->setIcon(QIcon("data/icons/ribbon/undo32x32.png"));
-	undo->setText("Undo");
+	undo->setText("撤销");
 	history_section->addWidget(undo);
 
 	redo->setIcon(QIcon("data/icons/ribbon/redo32x32.png"));
-	redo->setText("Redo");
+	redo->setText("重做");
 	history_section->addWidget(redo);
 
 	QRibbonSection* editor_section = new QRibbonSection;
-	editor_section->setText("Editor/Viewer");
+	editor_section->setText("编辑/查看");
 
 	trigger_editor->setIcon(QIcon("Data/Icons/Ribbon/triggereditor32x32.png"));
-	trigger_editor->setText("Trigger\nEditor");
+	trigger_editor->setText("触发器\n编辑器");
 	editor_section->addWidget(trigger_editor);
 
 	object_editor->setIcon(QIcon("data/icons/ribbon/objecteditor32x32.png"));
-	object_editor->setText("Object\nEditor");
+	object_editor->setText("对象\n编辑器");
 	editor_section->addWidget(object_editor);
 
 	model_editor->setIcon(QIcon("data/icons/ribbon/model_editor.png"));
-	model_editor->setText("Model\nEditor");
+	model_editor->setText("模型\n编辑器");
 	editor_section->addWidget(model_editor);
 
 	QRibbonSection* palette_section = new QRibbonSection;
-	palette_section->setText("Palette");
+	palette_section->setText("调色板");
 
 	terrain_palette->setIcon(QIcon("data/icons/ribbon/heightmap32x32.png"));
-	terrain_palette->setText("Terrain");
+	terrain_palette->setText("地形");
 	palette_section->addWidget(terrain_palette);
 
 	doodad_palette->setIcon(QIcon("data/icons/ribbon/doodads32x32.png"));
-	doodad_palette->setText("Doodads");
+	doodad_palette->setText("装饰物");
 	palette_section->addWidget(doodad_palette);
 
 	unit_palette->setIcon(QIcon("data/icons/ribbon/units32x32.png"));
-	unit_palette->setText("Units");
+	unit_palette->setText("单位");
 	palette_section->addWidget(unit_palette);
 
 	pathing_palette->setIcon(QIcon("data/icons/ribbon/pathing32x32.png"));
-	pathing_palette->setText("Pathing");
+	pathing_palette->setText("路径");
 	palette_section->addWidget(pathing_palette);
 
 
@@ -89,119 +89,119 @@ MainRibbon::MainRibbon(QWidget* parent) : QRibbon(parent) {
 
 	// Visible section
 	QRibbonSection* visible_section = new QRibbonSection;
-	visible_section->setText("Visible");
+	visible_section->setText("可见");
 	view_tab->addSection(visible_section);
 	
 	units_visible->setIcon(QIcon("data/icons/ribbon/units32x32.png"));
-	units_visible->setText("Units");
+	units_visible->setText("单位");
 	units_visible->setCheckable(true);
 	units_visible->setChecked(true);
 	visible_section->addWidget(units_visible);
 
 	doodads_visible->setIcon(QIcon("data/icons/ribbon/doodads32x32.png"));
-	doodads_visible->setText("Doodads");
+	doodads_visible->setText("装饰物");
 	doodads_visible->setCheckable(true);
 	doodads_visible->setChecked(true);
 	visible_section->addWidget(doodads_visible);
 
 	pathing_visible->setIcon(QIcon("data/icons/ribbon/pathing32x32.png"));
-	pathing_visible->setText("Pathing");
+	pathing_visible->setText("路径");
 	pathing_visible->setCheckable(true);
 	visible_section->addWidget(pathing_visible);
 	
 	brush_visible->setIcon(QIcon("data/icons/ribbon/brush32x32.png"));
-	brush_visible->setText("Brush");
+	brush_visible->setText("画刷");
 	brush_visible->setCheckable(true);
 	brush_visible->setChecked(true);
 	visible_section->addWidget(brush_visible);
 
 	lighting_visible->setIcon(QIcon("data/icons/ribbon/lighting32x32.png"));
-	lighting_visible->setText("Lighting");
+	lighting_visible->setText("光照");
 	lighting_visible->setCheckable(true);
 	lighting_visible->setChecked(true);
 	visible_section->addWidget(lighting_visible);
 
 	water_visible->setIcon(QIcon("data/icons/ribbon/water32x32.png"));
-	water_visible->setText("Water");
+	water_visible->setText("水体");
 	water_visible->setCheckable(true);
 	water_visible->setChecked(true);
 	visible_section->addWidget(water_visible);
 
 	click_helpers_visible->setIcon(QIcon("data/icons/ribbon/click_helpers.png"));
-	click_helpers_visible->setText("Click\nHelpers");
+	click_helpers_visible->setText("点击\n辅助");
 	click_helpers_visible->setCheckable(true);
 	click_helpers_visible->setChecked(true);
 	visible_section->addWidget(click_helpers_visible);
 
 	wireframe_visible->setIcon(QIcon("data/icons/ribbon/wireframe32x32.png"));
-	wireframe_visible->setText("Wireframe");
+	wireframe_visible->setText("线框");
 	wireframe_visible->setCheckable(true);
 	visible_section->addWidget(wireframe_visible);
 
 	debug_visible->setIcon(QIcon("data/icons/ribbon/debug32x32.png"));
-	debug_visible->setText("Debug");
+	debug_visible->setText("调试");
 	debug_visible->setCheckable(true);
 	visible_section->addWidget(debug_visible);
 
 	minimap_visible->setIcon(QIcon("data/icons/ribbon/minimap32x32.png"));
-	minimap_visible->setText("Minimap");
+	minimap_visible->setText("小地图");
 	minimap_visible->setCheckable(true);
 	minimap_visible->setChecked(true);
 	visible_section->addWidget(minimap_visible);
 	// Camera section
 	QRibbonSection* camera_section = new QRibbonSection;
-	camera_section->setText("Camera");
+	camera_section->setText("镜头");
 	view_tab->addSection(camera_section);
 
 	reset_camera->setIcon(QIcon("data/icons/ribbon/reset32x32.png"));
-	reset_camera->setText("Reset");
+	reset_camera->setText("重置");
 	camera_section->addWidget(reset_camera);
 
 	// Menu actions
-	new_map->setText("New Map");
+	new_map->setText("新建地图");
 	new_map->setIcon(QIcon("data/icons/ribbon/new32x32.ico"));
 	new_map->setIconSize({ 32, 32 });
 	new_map->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 	new_map->setDisabled(true);
 	addMenuItem(new_map);
 
-	open_map_folder->setText("Open Map (Folder)");
+	open_map_folder->setText("打开地图（文件夹）");
 	open_map_folder->setIcon(QIcon("data/icons/ribbon/open32x32.png"));
 	open_map_folder->setIconSize({ 32, 32 });
 	open_map_folder->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 	addMenuItem(open_map_folder);
 
-	open_map_mpq->setText("Open Map (MPQ)");
+	open_map_mpq->setText("打开地图（MPQ）");
 	open_map_mpq->setIcon(QIcon("data/icons/ribbon/open32x32.png"));
 	open_map_mpq->setIconSize({ 32, 32 });
 	open_map_mpq->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 	addMenuItem(open_map_mpq);
 
-	save_map->setText("Save Map");
+	save_map->setText("保存地图");
 	save_map->setIcon(QIcon("data/icons/ribbon/save32x32.png"));
 	save_map->setIconSize({ 32, 32 });
 	save_map->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 	addMenuItem(save_map);
 
-	save_map_as->setText("Save Map as");
+	save_map_as->setText("另存地图");
 	save_map_as->setIcon(QIcon("data/icons/ribbon/saveas32x32.png"));
 	save_map_as->setIconSize({ 32, 32 });
 	save_map_as->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 	addMenuItem(save_map_as);
 
-	export_mpq->setText("Export MPQ");
+	export_mpq->setText("导出MPQ");
 	export_mpq->setIcon(QIcon("data/icons/ribbon/saveas32x32.png"));
 	export_mpq->setIconSize({ 32, 32 });
 	export_mpq->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 	addMenuItem(export_mpq);
 
-	test_map->setText("Test Map");
+	test_map->setText("测试地图");
 	test_map->setIcon(QIcon("data/icons/ribbon/test32x32.ico"));
 	test_map->setIconSize({ 32, 32 });
 	test_map->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 	addMenuItem(test_map);
 
-	settings->setText("Settings");
+	settings->setText("设置");
 	settings->setIcon(QIcon("data/icons/ribbon/options32x32.png"));
 	settings->setIconSize({ 32, 32 });
 	settings->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
@@ -209,7 +209,7 @@ MainRibbon::MainRibbon(QWidget* parent) : QRibbon(parent) {
 
 	addMenuSeperator();
 
-	exit->setText("Exit");
+	exit->setText("退出");
 	exit->setIcon(QIcon("data/icons/ribbon/exit32x32.ico"));
 	exit->setIconSize({ 32, 32 });
 	exit->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
@@ -221,15 +221,15 @@ MainRibbon::MainRibbon(QWidget* parent) : QRibbon(parent) {
 	QRibbonSection* map_section = new QRibbonSection;
 
 	map_description->setIcon(QIcon("data/icons/ribbon/description32x32.png"));
-	map_description->setText("Description");
+	map_description->setText("描述");
 	map_section->addWidget(map_description);
 
 	map_loading_screen->setIcon(QIcon("data/icons/ribbon/loading32x32.png"));
-	map_loading_screen->setText("Loading\nScreen");
+	map_loading_screen->setText("载入\n界面");
 	map_section->addWidget(map_loading_screen);
 
 	map_options->setIcon(QIcon("data/icons/ribbon/options32x32.png"));
-	map_options->setText("Options");
+	map_options->setText("选项");
 	map_section->addWidget(map_options);
 
 	//map_size_camera_bounds->setIcon(QIcon("data/icons/ribbon/sizebounds32x32.png"));
@@ -243,33 +243,33 @@ MainRibbon::MainRibbon(QWidget* parent) : QRibbon(parent) {
 
 	// Import
 	QRibbonSection* import_section = new QRibbonSection;
-	import_section->setText("Import");
+	import_section->setText("导入");
 
 	import_heightmap->setIcon(QIcon("data/icons/ribbon/heightmap32x32.png"));
-	import_heightmap->setText("Import\nHeightmap");
+	import_heightmap->setText("导入\n高度图");
 	import_section->addWidget(import_heightmap);
 
 	tools_tab->addSection(import_section);
 
 	// Tileset
 	QRibbonSection* tileset_section = new QRibbonSection;
-	tileset_section->setText("Tileset");
+	tileset_section->setText("地形纹理");
 
 	change_tileset->setIcon(QIcon("data/icons/ribbon/tileset.png"));
-	change_tileset->setText("Change\nTileset");
+	change_tileset->setText("更换\n地形纹理");
 	tileset_section->addWidget(change_tileset);
 
 	change_tile_pathing->setIcon(QIcon("data/icons/ribbon/tileset32x32.png"));
-	change_tile_pathing->setText("Change Tile\nPathing");
+	change_tile_pathing->setText("更改地形\n路径");
 	tileset_section->addWidget(change_tile_pathing);
 
 	tools_tab->addSection(tileset_section);
 
 	QRibbonSection* game_section = new QRibbonSection;
-	game_section->setText("Game");
+	game_section->setText("游戏");
 
 	switch_warcraft->setIcon(QIcon("data/icons/ribbon/WarIII32x32.ico"));
-	switch_warcraft->setText("Change\n Game folder");
+	switch_warcraft->setText("更换\n游戏目录");
 	game_section->addWidget(switch_warcraft);
 
 	tools_tab->addSection(game_section);

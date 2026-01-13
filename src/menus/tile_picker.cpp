@@ -55,11 +55,11 @@ TilePicker::TilePicker(QWidget* parent, std::vector<std::string> from_ids, std::
 	connect(ui.buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
 	
 	connect(from_group, QOverload<QAbstractButton*>::of(&QButtonGroup::buttonClicked), [&](QAbstractButton* button) {
-		ui.selectedTileLabel->setText("Tile: " + button->property("tileName").toString());
+		ui.selectedTileLabel->setText("地形：" + button->property("tileName").toString());
 	});
 
 	connect(to_group, QOverload<QAbstractButton*>::of(&QButtonGroup::buttonClicked), [&](QAbstractButton* button) {
-		ui.replacingTileLabel->setText("Tile: " + button->property("tileName").toString());
+		ui.replacingTileLabel->setText("地形：" + button->property("tileName").toString());
 	});
 }
 

@@ -93,10 +93,10 @@ void ModelEditorGLWidget::paintGL() {
 
 	QtImGui::newFrame(ref);
 
-	if (ImGui::Begin("General")) {
-		ImGui::Text(std::format("FPS: {:.2f}", 1.0 / delta).c_str());
+	if (ImGui::Begin("常规")) {
+		ImGui::Text(std::format("帧率: {:.2f}", 1.0 / delta).c_str());
 
-		if (ImGui::Button("Edit MDL")) {
+		if (ImGui::Button("编辑MDL")) {
 
 			auto mdl = mesh->mdx->to_mdl();
 
@@ -109,10 +109,10 @@ void ModelEditorGLWidget::paintGL() {
 			QDesktopServices::openUrl(QUrl(path, QUrl::TolerantMode));
 		}
 
-		if (ImGui::Button("Open Model")) {
+		if (ImGui::Button("打开模型")) {
 			const QSettings settings;
 
-			const QString file_name = QFileDialog::getOpenFileName(this, "Open Model File",
+			const QString file_name = QFileDialog::getOpenFileName(this, "打开模型文件",
 															 settings.value("openDirectory", QDir::current().path()).toString(),
 															 "MDX (*.mdx *.MDX)");
 
@@ -132,7 +132,7 @@ void ModelEditorGLWidget::paintGL() {
 			recenter_camera();
 		}
 
-		ImGui::Text(std::format("name: {}", mesh->mdx->name).c_str());
+		ImGui::Text(std::format("名称: {}", mesh->mdx->name).c_str());
 
 		size_t vertices = 0;
 		size_t triangles = 0;
@@ -141,13 +141,13 @@ void ModelEditorGLWidget::paintGL() {
 			triangles += i.faces.size() / 3;
 		}
 
-		ImGui::Text(std::format("Vertices: {}", vertices).c_str());
-		ImGui::Text(std::format("Triangles: {}", triangles).c_str());
+		ImGui::Text(std::format("顶点: {}", vertices).c_str());
+		ImGui::Text(std::format("三角形: {}", triangles).c_str());
 	}
 	ImGui::End();
 
-	if (ImGui::Begin("Animation")) {
-		ImGui::Text("Animation");
+	if (ImGui::Begin("动画")) {
+		ImGui::Text("动画");
 		ImGui::SameLine();
 		if (ImGui::BeginCombo("##combo", mesh->mdx->sequences[skeleton.sequence_index].name.c_str())) {
 			for (size_t i = 0; i < mesh->mdx->sequences.size(); i++) {
@@ -161,10 +161,10 @@ void ModelEditorGLWidget::paintGL() {
 			ImGui::EndCombo();
 		}
 
-		ImGui::Text(std::format("Start frame: {}", mesh->mdx->sequences[skeleton.sequence_index].start_frame).c_str());
-		ImGui::Text(std::format("End frame: {}", mesh->mdx->sequences[skeleton.sequence_index].end_frame).c_str());
-		ImGui::Text(std::format("Current frame: {}", skeleton.current_frame).c_str());
-		ImGui::Text(std::format("Looping: {}", mesh->mdx->sequences[skeleton.sequence_index].flags == mdx::Sequence::Flags::looping).c_str());
+		ImGui::Text(std::format("起始帧：{}", mesh->mdx->sequences[skeleton.sequence_index].start_frame).c_str());
+		ImGui::Text(std::format("结束帧：{}", mesh->mdx->sequences[skeleton.sequence_index].end_frame).c_str());
+		ImGui::Text(std::format("当前帧：{}", skeleton.current_frame).c_str());
+		ImGui::Text(std::format("循环：{}", mesh->mdx->sequences[skeleton.sequence_index].flags == mdx::Sequence::Flags::looping).c_str());
 	}
 	ImGui::End();
 

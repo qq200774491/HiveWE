@@ -14,7 +14,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MapInfoEditor</string>
+   <string>地图信息编辑器</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_5">
    <item>
@@ -29,13 +29,13 @@
        </property>
        <widget class="QWidget" name="tab">
         <attribute name="title">
-         <string>Description</string>
+         <string>描述</string>
         </attribute>
         <layout class="QVBoxLayout" name="verticalLayout_2">
          <item>
           <widget class="QLabel" name="label">
            <property name="text">
-            <string>Name:</string>
+            <string>名称：</string>
            </property>
           </widget>
          </item>
@@ -45,7 +45,7 @@
          <item>
           <widget class="QLabel" name="label_2">
            <property name="text">
-            <string>Suggested Players:</string>
+            <string>建议玩家：</string>
            </property>
           </widget>
          </item>
@@ -55,7 +55,7 @@
          <item>
           <widget class="QLabel" name="label_3">
            <property name="text">
-            <string>Description</string>
+            <string>描述</string>
            </property>
           </widget>
          </item>
@@ -65,7 +65,7 @@
          <item>
           <widget class="QLabel" name="label_4">
            <property name="text">
-            <string>Author</string>
+            <string>作者</string>
            </property>
           </widget>
          </item>
@@ -77,7 +77,7 @@
            <item>
             <widget class="QLabel" name="label_5">
              <property name="text">
-              <string>Map Version:</string>
+              <string>地图版本：</string>
              </property>
             </widget>
            </item>
@@ -104,7 +104,7 @@
            <item>
             <widget class="QLabel" name="label_6">
              <property name="text">
-              <string>Editor Version:</string>
+              <string>编辑器版本：</string>
              </property>
             </widget>
            </item>
@@ -121,13 +121,13 @@
        </widget>
        <widget class="QWidget" name="tab_4">
         <attribute name="title">
-         <string>Loading Screen</string>
+         <string>载入界面</string>
         </attribute>
         <layout class="QVBoxLayout" name="verticalLayout_4">
          <item>
           <widget class="QLabel" name="label_7">
            <property name="text">
-            <string>Loading Screen Graphic</string>
+            <string>载入界面图片</string>
            </property>
           </widget>
          </item>
@@ -136,7 +136,7 @@
            <item row="0" column="0">
             <widget class="QRadioButton" name="useDefaultLoadingScreen">
              <property name="text">
-              <string>Use Default Screen</string>
+              <string>使用默认界面</string>
              </property>
              <attribute name="buttonGroup">
               <string notr="true">loadingScreenGraphicGroup</string>
@@ -146,7 +146,7 @@
            <item row="1" column="0">
             <widget class="QRadioButton" name="useCampaignLoadingScreen">
              <property name="text">
-              <string>Use Campaign Screen</string>
+              <string>使用战役界面</string>
              </property>
              <attribute name="buttonGroup">
               <string notr="true">loadingScreenGraphicGroup</string>
@@ -156,7 +156,7 @@
            <item row="2" column="0">
             <widget class="QRadioButton" name="useImportedLoadingScreen">
              <property name="text">
-              <string>Use Imported File</string>
+              <string>使用导入文件</string>
              </property>
              <attribute name="buttonGroup">
               <string notr="true">loadingScreenGraphicGroup</string>
@@ -188,7 +188,7 @@
          <item>
           <widget class="QLabel" name="label_14">
            <property name="text">
-            <string>Loading Screen Title</string>
+            <string>载入界面标题</string>
            </property>
           </widget>
          </item>
@@ -198,7 +198,7 @@
          <item>
           <widget class="QLabel" name="label_15">
            <property name="text">
-            <string>Loading Screen Subtitle</string>
+            <string>载入界面副标题</string>
            </property>
           </widget>
          </item>
@@ -208,7 +208,7 @@
          <item>
           <widget class="QLabel" name="label_16">
            <property name="text">
-            <string>Loading Screen Text</string>
+            <string>载入界面文字</string>
            </property>
           </widget>
          </item>
@@ -219,55 +219,55 @@
        </widget>
        <widget class="QWidget" name="tab_2">
         <attribute name="title">
-         <string>Options</string>
+         <string>选项</string>
         </attribute>
         <layout class="QVBoxLayout" name="verticalLayout_3">
          <item>
           <widget class="QCheckBox" name="meleeMap">
            <property name="text">
-            <string>Melee Map</string>
+            <string>近战地图</string>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QCheckBox" name="hideMinimapPreview">
            <property name="text">
-            <string>Hide minimap in preview screens</string>
+            <string>在预览界面隐藏小地图</string>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QCheckBox" name="maskedPartiallyVisible">
            <property name="text">
-            <string>Masked areas are partially visible</string>
+            <string>遮罩区域部分可见</string>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QCheckBox" name="cliffWaves">
            <property name="text">
-            <string>Show water waves on cliff shores</string>
+            <string>在悬崖岸边显示水波</string>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QCheckBox" name="rollingShoreWaves">
            <property name="text">
-            <string>Show water waves on rolling shores</string>
+            <string>在缓坡岸边显示水波</string>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QCheckBox" name="itemClassification">
            <property name="text">
-            <string>Use item classification system</string>
+            <string>使用物品分类系统</string>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QGroupBox" name="terrainFogBox">
            <property name="title">
-            <string>Use Terrain Fog</string>
+            <string>使用地形雾</string>
            </property>
            <property name="checkable">
             <bool>true</bool>
@@ -276,7 +276,7 @@
             <item row="0" column="0">
              <widget class="QLabel" name="label_8">
               <property name="text">
-               <string>Style</string>
+               <string>样式</string>
               </property>
              </widget>
             </item>
@@ -284,17 +284,17 @@
              <widget class="QComboBox" name="fogStyle">
               <item>
                <property name="text">
-                <string>Linear</string>
+                <string>线性</string>
                </property>
               </item>
               <item>
                <property name="text">
-                <string>Exponential 1</string>
+                <string>指数 1</string>
                </property>
               </item>
               <item>
                <property name="text">
-                <string>Exponential 2</string>
+                <string>指数 2</string>
                </property>
               </item>
              </widget>
@@ -302,7 +302,7 @@
             <item row="1" column="0">
              <widget class="QLabel" name="label_9">
               <property name="text">
-               <string>Z Start</string>
+               <string>Z 起始</string>
               </property>
              </widget>
             </item>
@@ -322,7 +322,7 @@
             <item row="2" column="0">
              <widget class="QLabel" name="label_10">
               <property name="text">
-               <string>Z End</string>
+               <string>Z 结束</string>
               </property>
              </widget>
             </item>
@@ -342,7 +342,7 @@
             <item row="3" column="0">
              <widget class="QLabel" name="label_11">
               <property name="text">
-               <string>Density</string>
+               <string>密度</string>
               </property>
              </widget>
             </item>
@@ -362,14 +362,14 @@
             <item row="4" column="0">
              <widget class="QLabel" name="label_12">
               <property name="text">
-               <string>Color</string>
+               <string>颜色</string>
               </property>
              </widget>
             </item>
             <item row="4" column="1">
              <widget class="ColorButton" name="fogColor">
               <property name="text">
-               <string>Choose Color</string>
+               <string>选择颜色</string>
               </property>
              </widget>
             </item>
@@ -381,7 +381,7 @@
            <item row="0" column="0">
             <widget class="QCheckBox" name="globalWeather">
              <property name="text">
-              <string>Use Global Weather</string>
+              <string>使用全局天气</string>
              </property>
             </widget>
            </item>
@@ -398,7 +398,7 @@
            <item row="1" column="0">
             <widget class="QCheckBox" name="customSound">
              <property name="text">
-              <string>Custom Sound Environment</string>
+              <string>自定义声音环境</string>
              </property>
             </widget>
            </item>
@@ -412,7 +412,7 @@
            <item row="2" column="0">
             <widget class="QCheckBox" name="customLighting">
              <property name="text">
-              <string>Custom Light Environment</string>
+              <string>自定义光照环境</string>
              </property>
             </widget>
            </item>
@@ -429,7 +429,7 @@
            <item row="4" column="0">
             <widget class="QLabel" name="label_13">
              <property name="text">
-              <string>Game Data Set:</string>
+              <string>游戏数据集：</string>
              </property>
             </widget>
            </item>
@@ -437,17 +437,17 @@
             <widget class="QComboBox" name="gameDataSet">
              <item>
               <property name="text">
-               <string>Default (Map melee status)</string>
+               <string>默认（根据地图近战状态）</string>
               </property>
              </item>
              <item>
               <property name="text">
-               <string>Custom (TFT 1.02, RoC 1.01)</string>
+               <string>自定义（TFT 1.02，RoC 1.01）</string>
               </property>
              </item>
              <item>
               <property name="text">
-               <string>Melee (Latest Patch)</string>
+               <string>近战（最新补丁）</string>
               </property>
              </item>
             </widget>
@@ -455,7 +455,7 @@
            <item row="3" column="0">
             <widget class="QCheckBox" name="waterTinting">
              <property name="text">
-              <string>Use Water Tinting Color</string>
+              <string>使用水体染色</string>
              </property>
             </widget>
            </item>
@@ -465,7 +465,7 @@
               <bool>false</bool>
              </property>
              <property name="text">
-              <string>Choose Color</string>
+              <string>选择颜色</string>
              </property>
             </widget>
            </item>
@@ -475,7 +475,7 @@
        </widget>
        <widget class="QWidget" name="tab_5">
         <attribute name="title">
-         <string>Preferences</string>
+         <string>首选项</string>
         </attribute>
         <widget class="QLabel" name="label_17">
          <property name="geometry">
@@ -487,7 +487,7 @@
           </rect>
          </property>
          <property name="text">
-          <string>?</string>
+          <string>？</string>
          </property>
         </widget>
        </widget>

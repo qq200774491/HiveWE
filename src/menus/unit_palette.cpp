@@ -31,13 +31,13 @@ UnitPalette::UnitPalette(QWidget* parent) : Palette(parent) {
 
 		ui.player->addItem(QString::fromStdString(player_name), player.internal_number);
 	}
-	ui.player->addItem("Neutral Hostile", 24);
-	ui.player->addItem("Neutral Passive", 27);
+	ui.player->addItem("中立敌对", 24);
+	ui.player->addItem("中立被动", 27);
 
 	QRibbonSection* selection_section = new QRibbonSection;
-	selection_section->setText("Selection");
+	selection_section->setText("选择");
 
-	selection_mode->setText("Selection\nMode");
+	selection_mode->setText("选择\n模式");
 	selection_mode->setIcon(QIcon("data/icons/Ribbon/select32x32.png"));
 	selection_mode->setCheckable(true);
 	selection_section->addWidget(selection_mode);
@@ -51,16 +51,16 @@ UnitPalette::UnitPalette(QWidget* parent) : Palette(parent) {
 	selection_mode->setShortCut(Qt::Key_Space, { this, parent });
 
 	current_selection_section = new QRibbonSection;
-	current_selection_section->setText("Current Selection");
+	current_selection_section->setText("当前选择");
 	current_selection_section->setEnabled(false);
 
 	QSmallRibbonButton* edit_in_oe = new QSmallRibbonButton;
-	edit_in_oe->setText("Edit in OE");
+	edit_in_oe->setText("在对象编辑器中编辑");
 	edit_in_oe->setIcon(QIcon("data/icons/Ribbon/objecteditor32x32.png"));
 
 	QSmallRibbonButton* select_in_palette = new QSmallRibbonButton;
-	select_in_palette->setText("Select in Palette");
-	select_in_palette->setToolTip("Or click the unit with middle mouse button");
+	select_in_palette->setText("在调色板中选择");
+	select_in_palette->setToolTip("或用鼠标中键点击单位");
 	select_in_palette->setIcon(QIcon("data/icons/Ribbon/units32x32.png"));
 
 	QVBoxLayout* info_layout = new QVBoxLayout;
@@ -133,7 +133,7 @@ bool UnitPalette::event(QEvent* e) {
 		find_parent->setEnabled(true);
 		selection_mode->enableShortcuts();
 		map->brush = &brush;
-		emit ribbon_tab_requested(ribbon_tab, "Unit Palette");
+		emit ribbon_tab_requested(ribbon_tab, "单位调色板");
 	}
 	return QWidget::event(e);
 }
@@ -177,7 +177,7 @@ void UnitPalette::update_selection_info() {
 			auto index = units_table->index(units_slk.row_headers.at(unit.id), units_slk.column_headers.at("name"));
 			selection_name->setText(units_table->data(index).toString());
 		} else {
-			selection_name->setText("Various");
+			selection_name->setText("多种");
 		}
 	}
 }

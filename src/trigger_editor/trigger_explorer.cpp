@@ -46,15 +46,15 @@ TriggerExplorer::TriggerExplorer(QWidget* parent) : QTreeView(parent) {
 	runOnInitialization->setCheckable(true);
 	initiallyOn->setCheckable(true);
 
-	addCategory->setText("Add Category");
-	addGuiTrigger->setText("Add GUI Trigger");
-	addJassTrigger->setText("Add Jass Trigger");
-	addComment->setText("Add Comment");
-	deleteRow->setText("Delete");
-	renameRow->setText("Rename");
-	isEnabled->setText("Enabled");
-	runOnInitialization->setText("Run on Map Initialization");
-	initiallyOn->setText("Initially On");
+	addCategory->setText("添加分类");
+	addGuiTrigger->setText("添加GUI触发器");
+	addJassTrigger->setText("添加JASS触发器");
+	addComment->setText("添加注释");
+	deleteRow->setText("删除");
+	renameRow->setText("重命名");
+	isEnabled->setText("启用");
+	runOnInitialization->setText("在地图初始化时运行");
+	initiallyOn->setText("默认开启");
 
 	connect(this, &QTreeView::customContextMenuRequested, [&](const QPoint& point) {
 		const int count = selectionModel()->selectedRows().count();
@@ -348,7 +348,7 @@ void recursively_delete(TreeItem* parent) {
 void TriggerExplorer::deleteSelection() {
 	auto indices = selectionModel()->selectedRows();
 
-	int choice = QMessageBox::question(this, "Delete selected items?", "Are you sure you want to delete these triggers PERMANENTLY?", QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
+	int choice = QMessageBox::question(this, "删除所选项目？", "确定要永久删除这些触发器吗？", QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
 
 	if (choice == QMessageBox::Yes) {
 		for (const auto index : indices) {

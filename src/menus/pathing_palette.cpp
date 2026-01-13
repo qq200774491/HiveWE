@@ -19,22 +19,22 @@ PathingPalette::PathingPalette(QWidget *parent) : Palette(parent) {
 	map->brush = &brush;
 
 	QRibbonSection* selection_section = new QRibbonSection;
-	selection_section->setText("Selection");
+	selection_section->setText("选择");
 
-	selection_mode->setText("Selection\nMode");
+	selection_mode->setText("选择\n模式");
 	selection_mode->setIcon(QIcon("data/icons/Ribbon/select32x32.png"));
 	selection_mode->setCheckable(true);
 	selection_mode->setEnabled(false);
 	selection_section->addWidget(selection_mode);
 
 	QRibbonSection* tools_section = new QRibbonSection;
-	tools_section->setText("Tools");
+	tools_section->setText("工具");
 
-	import_pathing->setText("Import\nPathing");
+	import_pathing->setText("导入\n路径");
 	import_pathing->setIcon(QIcon("data/icons/pathing_palette/import.png"));
 	tools_section->addWidget(import_pathing);
 
-	export_pathing->setText("Export\nPathing");
+	export_pathing->setText("导出\n路径");
 	export_pathing->setIcon(QIcon("data/icons/pathing_palette/export.png"));
 	tools_section->addWidget(export_pathing);
 
@@ -74,7 +74,7 @@ PathingPalette::PathingPalette(QWidget *parent) : Palette(parent) {
 		QSettings settings;
 		const QString directory = settings.value("openDirectoryPathing", QDir::current().path()).toString();
 
-		const QString file_name = QFileDialog::getOpenFileName(this, "Open Pathing Image", directory, "Images (*.png *.jpg *.jpeg *.bmp *.gif)");
+		const QString file_name = QFileDialog::getOpenFileName(this, "打开路径图像", directory, "图像 (*.png *.jpg *.jpeg *.bmp *.gif)");
 
 		if (file_name == "") {
 			return;
@@ -85,15 +85,15 @@ PathingPalette::PathingPalette(QWidget *parent) : Palette(parent) {
 
 		QImage image;
 		if (!image.load(file_name)) {
-			QMessageBox::critical(this, "Error", "Failed to open image");
+			QMessageBox::critical(this, "错误", "无法打开图像");
 		}
 		image = image.convertToFormat(QImage::Format::Format_RGB888);
 		image.flip(Qt::Orientation::Vertical);
 
 		const bool success = map->pathing_map.from_rgb(std::span{const_cast<uint8_t*>(image.constBits()), static_cast<size_t>(image.sizeInBytes())});
 		if (!success) {
-			const auto msg = std::format("Failed to load image. It has to be a {}x{} RGB image", map->pathing_map.width, map->pathing_map.height);
-			QMessageBox::critical(this, "Error", QString::fromStdString(msg));
+			const auto msg = std::format("加载图像失败。必须是 {}x{} 的RGB图像", map->pathing_map.width, map->pathing_map.height);
+			QMessageBox::critical(this, "错误", QString::fromStdString(msg));
 		}
 	});
 
@@ -101,7 +101,7 @@ PathingPalette::PathingPalette(QWidget *parent) : Palette(parent) {
 		QSettings settings;
 		const QString directory = settings.value("openDirectoryPathing", QDir::current().path()).toString() + "/pathing_map.png";
 
-		const QString file_name = QFileDialog::getSaveFileName(this, "Open Heightmap Image", directory);
+		const QString file_name = QFileDialog::getSaveFileName(this, "保存路径图像", directory);
 
 		if (file_name == "") {
 			return;
@@ -114,7 +114,7 @@ PathingPalette::PathingPalette(QWidget *parent) : Palette(parent) {
 		QImage image(data.data(), map->pathing_map.width, map->pathing_map.height, QImage::Format_RGB888);
 		image.flip(Qt::Orientation::Vertical);
 		if (!image.save(file_name, "PNG")) {
-			QMessageBox::critical(this, "Error", "Failed to save image");
+			QMessageBox::critical(this, "错误", "保存图像失败");
 		}
 	});
 }
@@ -132,7 +132,7 @@ bool PathingPalette::event(QEvent* e) {
 	} else if (e->type() == QEvent::WindowActivate) {
 		selection_mode->enableShortcuts();
 		map->brush = &brush;
-		emit ribbon_tab_requested(ribbon_tab, "Pathing Palette");
+		emit ribbon_tab_requested(ribbon_tab, "路径调色板");
 	}
 	return QWidget::event(e);
 }

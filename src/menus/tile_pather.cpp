@@ -59,7 +59,7 @@ TilePather::TilePather(QWidget *parent) : QDialog(parent) {
 }
 
 void TilePather::changed_tile(QAbstractButton* button) {
-	ui.selectedTileLabel->setText("Tile: " + button->property("tileName").toString());
+	ui.selectedTileLabel->setText("地形：" + button->property("tileName").toString());
 
 	current_tile = button->property("tileID").toString().toStdString();
 

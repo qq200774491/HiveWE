@@ -21,7 +21,7 @@
           </size>
          </property>
          <property name="text">
-          <string>Variable Name: </string>
+          <string>变量名称：</string>
          </property>
          <property name="textInteractionFlags">
           <set>Qt::NoTextInteraction</set>
@@ -40,7 +40,7 @@
           </size>
          </property>
          <property name="text">
-          <string>Variable Type: </string>
+          <string>变量类型：</string>
          </property>
          <property name="textInteractionFlags">
           <set>Qt::NoTextInteraction</set>
@@ -55,7 +55,7 @@
          <item>
           <widget class="QCheckBox" name="array">
            <property name="text">
-            <string>Array</string>
+            <string>数组</string>
            </property>
           </widget>
          </item>
@@ -71,7 +71,7 @@
             </size>
            </property>
            <property name="text">
-            <string>Size: </string>
+            <string>大小：</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -108,7 +108,7 @@
           </size>
          </property>
          <property name="text">
-          <string>Initial Value: </string>
+          <string>初始值：</string>
          </property>
          <property name="textInteractionFlags">
           <set>Qt::NoTextInteraction</set>

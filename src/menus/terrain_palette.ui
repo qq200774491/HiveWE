@@ -11,13 +11,13 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Terrain Palette</string>
+   <string>地形调色板</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QCheckBox" name="textureCheckbox">
      <property name="text">
-      <string>Texture</string>
+      <string>纹理</string>
      </property>
     </widget>
    </item>
@@ -68,7 +68,7 @@
           </size>
          </property>
          <property name="toolTip">
-          <string>Blight.</string>
+          <string>荒芜地</string>
          </property>
          <property name="text">
           <string/>
@@ -105,7 +105,7 @@
           </size>
          </property>
          <property name="toolTip">
-          <string>Add Boundary.</string>
+          <string>添加边界</string>
          </property>
          <property name="text">
           <string/>
@@ -152,7 +152,7 @@
           </size>
          </property>
          <property name="toolTip">
-          <string>Remove Boundary.</string>
+          <string>移除边界</string>
          </property>
          <property name="text">
           <string/>
@@ -189,7 +189,7 @@
    <item>
     <widget class="QCheckBox" name="cliffCheckbox">
      <property name="text">
-      <string>Cliff</string>
+      <string>悬崖</string>
      </property>
     </widget>
    </item>
@@ -228,7 +228,7 @@
         </size>
        </property>
        <property name="toolTip">
-        <string>Lower cliff by 2.</string>
+        <string>降低悬崖2级</string>
        </property>
        <property name="text">
         <string/>
@@ -278,7 +278,7 @@
         </size>
        </property>
        <property name="toolTip">
-        <string>Lower cliff by 1.</string>
+        <string>降低悬崖1级</string>
        </property>
        <property name="text">
         <string/>
@@ -328,7 +328,7 @@
         </size>
        </property>
        <property name="toolTip">
-        <string>Level.</string>
+        <string>平整</string>
        </property>
        <property name="text">
         <string/>
@@ -381,7 +381,7 @@
         </size>
        </property>
        <property name="toolTip">
-        <string>Raise cliff by 1.</string>
+        <string>升高悬崖1级</string>
        </property>
        <property name="text">
         <string/>
@@ -431,7 +431,7 @@
         </size>
        </property>
        <property name="toolTip">
-        <string>Raise cliff by 2.</string>
+        <string>升高悬崖2级</string>
        </property>
        <property name="text">
         <string/>
@@ -501,7 +501,7 @@
         </size>
        </property>
        <property name="toolTip">
-        <string>Deep water.</string>
+        <string>深水</string>
        </property>
        <property name="text">
         <string/>
@@ -554,7 +554,7 @@
         </size>
        </property>
        <property name="toolTip">
-        <string>Shallow water.</string>
+        <string>浅水</string>
        </property>
        <property name="text">
         <string/>
@@ -607,7 +607,7 @@
         </size>
        </property>
        <property name="toolTip">
-        <string>Ramp.</string>
+        <string>坡道</string>
        </property>
        <property name="text">
         <string/>
@@ -651,7 +651,7 @@
    <item>
     <widget class="QCheckBox" name="deformationCheckbox">
      <property name="text">
-      <string>Deformation</string>
+      <string>地形变形</string>
      </property>
     </widget>
    </item>
@@ -687,7 +687,7 @@
         </size>
        </property>
        <property name="toolTip">
-        <string>Raise the terrain.</string>
+        <string>抬升地形</string>
        </property>
        <property name="text">
         <string/>
@@ -740,7 +740,7 @@
         </size>
        </property>
        <property name="toolTip">
-        <string>Lower the terrain.</string>
+        <string>降低地形</string>
        </property>
        <property name="text">
         <string/>
@@ -793,7 +793,7 @@
         </size>
        </property>
        <property name="toolTip">
-        <string>Ripple the terrain randomly.</string>
+        <string>随机起伏地形</string>
        </property>
        <property name="text">
         <string/>
@@ -843,7 +843,7 @@
         </size>
        </property>
        <property name="toolTip">
-        <string>Plateau/flatten terrain.</string>
+        <string>平台/平整地形</string>
        </property>
        <property name="text">
         <string/>
@@ -896,7 +896,7 @@
         </size>
        </property>
        <property name="toolTip">
-        <string>Smooth terrain.</string>
+        <string>平滑地形</string>
        </property>
        <property name="text">
         <string/>
@@ -924,7 +924,7 @@
    <item>
     <widget class="QLabel" name="label_2">
      <property name="text">
-      <string>Brush Size</string>
+      <string>画刷大小</string>
      </property>
     </widget>
    </item>
@@ -951,7 +951,7 @@
         </size>
        </property>
        <property name="toolTip">
-        <string>Sets the brush size to 1x1.</string>
+        <string>将画刷大小设为1x1</string>
        </property>
        <property name="text">
         <string>1</string>
@@ -976,7 +976,7 @@
         </size>
        </property>
        <property name="toolTip">
-        <string>Sets the brush size to 3x3.</string>
+        <string>将画刷大小设为3x3</string>
        </property>
        <property name="text">
         <string>3</string>
@@ -998,7 +998,7 @@
         </size>
        </property>
        <property name="toolTip">
-        <string>Sets the brush size to 5x5.</string>
+        <string>将画刷大小设为5x5</string>
        </property>
        <property name="text">
         <string>5</string>
@@ -1020,7 +1020,7 @@
         </size>
        </property>
        <property name="toolTip">
-        <string>Sets the brush size to 7x7.</string>
+        <string>将画刷大小设为7x7</string>
        </property>
        <property name="text">
         <string>7</string>
@@ -1042,7 +1042,7 @@
         </size>
        </property>
        <property name="toolTip">
-        <string>Sets the brush size to 9x9.</string>
+        <string>将画刷大小设为9x9</string>
        </property>
        <property name="text">
         <string>9</string>
@@ -1064,7 +1064,7 @@
         </size>
        </property>
        <property name="toolTip">
-        <string>Sets the brush size to 11x11.</string>
+        <string>将画刷大小设为11x11</string>
        </property>
        <property name="text">
         <string>11</string>
@@ -1084,7 +1084,7 @@
      <item>
       <widget class="QSpinBox" name="brushSize">
        <property name="toolTip">
-        <string>The current brush size</string>
+        <string>当前画刷大小</string>
        </property>
        <property name="readOnly">
         <bool>true</bool>
@@ -1109,7 +1109,7 @@
      <item>
       <widget class="QSlider" name="brushSizeSlider">
        <property name="toolTip">
-        <string>Sets the brush size.</string>
+        <string>设置画刷大小</string>
        </property>
        <property name="minimum">
         <number>1</number>
@@ -1142,7 +1142,7 @@
    <item>
     <widget class="QLabel" name="label">
      <property name="text">
-      <string>Brush Shape</string>
+      <string>画刷形状</string>
      </property>
     </widget>
    </item>
@@ -1157,7 +1157,7 @@
         </sizepolicy>
        </property>
        <property name="toolTip">
-        <string>Circular brush shape</string>
+        <string>圆形画刷</string>
        </property>
        <property name="text">
         <string/>
@@ -1192,7 +1192,7 @@
         </sizepolicy>
        </property>
        <property name="toolTip">
-        <string>Square brush shape</string>
+        <string>方形画刷</string>
        </property>
        <property name="text">
         <string/>
@@ -1224,7 +1224,7 @@
         </sizepolicy>
        </property>
        <property name="toolTip">
-        <string>Diamond brush shape</string>
+        <string>菱形画刷</string>
        </property>
        <property name="text">
         <string/>

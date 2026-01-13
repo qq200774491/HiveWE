@@ -78,6 +78,7 @@ struct RandomItemTable {
 
 export class MapInfo {
   public:
+	int file_format_version = 0;
 	int map_version;
 	int editor_version;
 	int game_version_major;
@@ -148,13 +149,13 @@ export class MapInfo {
 	char custom_light_tileset;
 	glm::u8vec4 water_color;
 
-	bool lua;
-	uint32_t supported_modes;
-	uint32_t game_data_version;
+	bool lua = false;
+	uint32_t supported_modes = 0;
+	uint32_t game_data_version = 0;
 
-	uint32_t default_cam_distance;
-	uint32_t max_cam_distance;
-	uint32_t min_cam_distance;
+	uint32_t default_cam_distance = 0;
+	uint32_t max_cam_distance = 0;
+	uint32_t min_cam_distance = 0;
 
 	std::vector<PlayerData> players;
 	std::vector<ForceData> forces;
@@ -171,9 +172,29 @@ export class MapInfo {
 	static constexpr int write_game_version_build = 22978;
 
 	void load() {
+		map_version = 0;
+		editor_version = 0;
+		name.clear();
+		author.clear();
+		description.clear();
+		suggested_players.clear();
+
+		game_version_major = 0;
+		game_version_minor = 0;
+		game_version_patch = 0;
+		game_version_build = 0;
+		lua = false;
+		supported_modes = 0;
+		game_data_version = 0;
+		default_cam_distance = 0;
+		max_cam_distance = 0;
+		min_cam_distance = 0;
+
 		BinaryReader reader = hierarchy.map_file_read("war3map.w3i").value();
 
 		const int version = reader.read<uint32_t>();
+
+		file_format_version = version;
 
 		if (version != 33 && version != 32 && version != 31 && version != 28 && version != 25 && version != 18 && version != 15) {
 			std::cout << "Unknown war3map.w3i version\n";
@@ -384,16 +405,36 @@ export class MapInfo {
 		}
 	}
 
+	bool supports_skins() const {
+		if (file_format_version != 0 && file_format_version < 28) {
+			return false;
+		}
+		const int game_version = game_version_major * 100 + game_version_minor;
+		return game_version >= 132;
+	}
+
 	void save(char tileset) const {
 		BinaryWriter writer;
 
-		writer.write(write_version);
+		int format_version = file_format_version;
+		if (format_version == 0) {
+			format_version = hierarchy.is_classic() ? 25 : write_version;
+		}
+
+		writer.write(format_version);
 		writer.write(map_version);
-		writer.write(write_editor_version);
-		writer.write(write_game_version_major);
-		writer.write(write_game_version_minor);
-		writer.write(write_game_version_patch);
-		writer.write(write_game_version_build);
+		const int editor_ver = editor_version == 0 ? (hierarchy.is_classic() ? 6051 : write_editor_version) : editor_version;
+		writer.write(editor_ver);
+		if (format_version >= 28) {
+			const int major = game_version_major == 0 ? write_game_version_major : game_version_major;
+			const int minor = game_version_minor == 0 ? write_game_version_minor : game_version_minor;
+			const int patch = game_version_patch == 0 ? write_game_version_patch : game_version_patch;
+			const int build = game_version_build == 0 ? write_game_version_build : game_version_build;
+			writer.write(major);
+			writer.write(minor);
+			writer.write(patch);
+			writer.write(build);
+		}
 		writer.write_c_string(name);
 		writer.write_c_string(author);
 		writer.write_c_string(description);
@@ -437,38 +478,63 @@ export class MapInfo {
 
 		writer.write(tileset);
 
-		writer.write(loading_screen_number);
-		writer.write_c_string(loading_screen_model);
-		writer.write_c_string(loading_screen_text);
-		writer.write_c_string(loading_screen_title);
-		writer.write_c_string(loading_screen_subtitle);
+		if (format_version >= 25) {
+			writer.write(loading_screen_number);
+			writer.write_c_string(loading_screen_model);
+			writer.write_c_string(loading_screen_text);
+			writer.write_c_string(loading_screen_title);
+			writer.write_c_string(loading_screen_subtitle);
 
-		writer.write(game_data_set);
+			writer.write(game_data_set);
 
-		writer.write_c_string(prologue_screen_model);
-		writer.write_c_string(prologue_text);
-		writer.write_c_string(prologue_title);
-		writer.write_c_string(prologue_subtitle);
+			writer.write_c_string(prologue_screen_model);
+			writer.write_c_string(prologue_text);
+			writer.write_c_string(prologue_title);
+			writer.write_c_string(prologue_subtitle);
 
-		writer.write(fog_style);
-		writer.write(fog_start_z_height);
-		writer.write(fog_end_z_height);
-		writer.write(fog_density);
-		writer.write(fog_color);
+			writer.write(fog_style);
+			writer.write(fog_start_z_height);
+			writer.write(fog_end_z_height);
+			writer.write(fog_density);
+			writer.write(fog_color);
 
-		writer.write(weather_id);
-		writer.write_c_string(custom_sound_environment);
-		writer.write(custom_light_tileset);
-		writer.write(water_color);
+			writer.write(weather_id);
+			writer.write_c_string(custom_sound_environment);
+			writer.write(custom_light_tileset);
+			writer.write(water_color);
 
-		writer.write((uint32_t)lua);
+			if (format_version >= 28) {
+				writer.write((uint32_t)lua);
+			}
 
-		writer.write(supported_modes);
-		writer.write(game_data_version);
+			if (format_version >= 31) {
+				writer.write(supported_modes);
+				writer.write(game_data_version);
+			}
 
-		writer.write(default_cam_distance);
-		writer.write(max_cam_distance);
-		writer.write(min_cam_distance);
+			if (format_version >= 32) {
+				writer.write(default_cam_distance);
+				writer.write(max_cam_distance);
+				if (format_version >= 33) {
+					writer.write(min_cam_distance);
+				}
+			}
+		} else if (format_version == 18) {
+			writer.write(loading_screen_number);
+			writer.write_c_string(loading_screen_text);
+			writer.write_c_string(loading_screen_title);
+			writer.write_c_string(loading_screen_subtitle);
+			writer.write<uint32_t>(0);
+			writer.write_c_string(prologue_text);
+			writer.write_c_string(prologue_title);
+			writer.write_c_string(prologue_subtitle);
+		} else {
+			writer.write<uint8_t>(0);
+			writer.write_c_string(loading_screen_text);
+			writer.write_c_string(loading_screen_title);
+			writer.write_c_string(loading_screen_subtitle);
+			writer.write<uint32_t>(0);
+		}
 
 		writer.write<uint32_t>(players.size());
 		for (const auto& i : players) {

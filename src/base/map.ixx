@@ -537,32 +537,47 @@ export class Map: public QObject {
 		pathing_map.save();
 		terrain.save();
 
+		const bool supports_skin = info.supports_skins() && !hierarchy.is_classic();
 		save_modification_file("war3map.w3d", doodads_slk, doodads_meta_slk, true, false);
-		save_modification_file("war3mapSkin.w3d", doodads_slk, doodads_meta_slk, true, true);
+		if (supports_skin) {
+			save_modification_file("war3mapSkin.w3d", doodads_slk, doodads_meta_slk, true, true);
+		}
 		save_modification_file("war3map.w3b", destructibles_slk, destructibles_meta_slk, false, false);
-		save_modification_file("war3mapSkin.w3b", destructibles_slk, destructibles_meta_slk, false, true);
-		doodads.save(terrain);
+		if (supports_skin) {
+			save_modification_file("war3mapSkin.w3b", destructibles_slk, destructibles_meta_slk, false, true);
+		}
+		doodads.save(terrain, info);
 
 		save_modification_file("war3map.w3u", units_slk, units_meta_slk, false, false);
-		save_modification_file("war3mapSkin.w3u", units_slk, units_meta_slk, false, true);
+		if (supports_skin) {
+			save_modification_file("war3mapSkin.w3u", units_slk, units_meta_slk, false, true);
+		}
 		save_modification_file("war3map.w3t", items_slk, items_meta_slk, false, false);
-		save_modification_file("war3mapSkin.w3t", items_slk, items_meta_slk, false, true);
-		units.save(terrain);
+		if (supports_skin) {
+			save_modification_file("war3mapSkin.w3t", items_slk, items_meta_slk, false, true);
+		}
+		units.save(terrain, info);
 
 		save_modification_file("war3map.w3a", abilities_slk, abilities_meta_slk, true, false);
-		save_modification_file("war3mapSkin.w3a", abilities_slk, abilities_meta_slk, true, true);
+		if (supports_skin) {
+			save_modification_file("war3mapSkin.w3a", abilities_slk, abilities_meta_slk, true, true);
+		}
 
 		save_modification_file("war3map.w3h", buff_slk, buff_meta_slk, false, false);
-		save_modification_file("war3mapSkin.w3h", buff_slk, buff_meta_slk, false, true);
+		if (supports_skin) {
+			save_modification_file("war3mapSkin.w3h", buff_slk, buff_meta_slk, false, true);
+		}
 		save_modification_file("war3map.w3q", upgrade_slk, upgrade_meta_slk, true, false);
-		save_modification_file("war3mapSkin.w3q", upgrade_slk, upgrade_meta_slk, true, true);
+		if (supports_skin) {
+			save_modification_file("war3mapSkin.w3q", upgrade_slk, upgrade_meta_slk, true, true);
+		}
 
 		info.save(terrain.tileset);
 		trigger_strings.save();
 		triggers.save();
 		triggers.save_scripts();
 		ScriptMode mode = ScriptMode::jass;
-		if (info.lua) {
+		if (info.lua && !hierarchy.is_classic()) {
 			mode = ScriptMode::lua;
 		}
 
@@ -570,8 +585,8 @@ export class Map: public QObject {
 		if (!result.has_value()) {
 			QMessageBox::information(
 				nullptr,
-				"vJass output",
-				"There were compilation errors:\n" + QString::fromStdString(result.error()),
+				"vJass 输出",
+				"编译时出现错误：\n" + QString::fromStdString(result.error()),
 				QMessageBox::StandardButton::Ok
 			);
 		}
