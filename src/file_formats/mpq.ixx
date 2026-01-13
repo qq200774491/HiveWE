@@ -11,6 +11,14 @@ namespace fs = std::filesystem;
 
 // A thin wrapper around StormLib https://github.com/ladislav-zezula/StormLib
 namespace mpq {
+	export inline constexpr unsigned long open_read_only = MPQ_OPEN_READ_ONLY;
+
+	static std::string normalize_mpq_path(const fs::path& path) {
+		std::string normalized = path.string();
+		std::replace(normalized.begin(), normalized.end(), '/', '\\');
+		return normalized;
+	}
+
 	export class File {
 	  public:
 		HANDLE handle = nullptr;
@@ -142,10 +150,12 @@ namespace mpq {
 		File file_open(const fs::path& path) const {
 			File file;
 #ifdef WIN32
-			const std::string open_path = path.is_absolute() ? fs::weakly_canonical(path).string() : path.string();
+			std::string open_path = path.is_absolute() ? fs::weakly_canonical(path).string() : path.string();
+			std::replace(open_path.begin(), open_path.end(), '/', '\\');
 			const bool opened = SFileOpenFileEx(handle, open_path.c_str(), 0, &file.handle);
 #else
-			const bool opened = SFileOpenFileEx(handle, path.string().c_str(), 0, &file.handle);
+			const std::string open_path = normalize_mpq_path(path);
+			const bool opened = SFileOpenFileEx(handle, open_path.c_str(), 0, &file.handle);
 #endif
 			if (!opened) {
 				throw std::runtime_error("Failed to read file " + path.string() + " with error: " + std::to_string(GetLastError()));
@@ -155,7 +165,8 @@ namespace mpq {
 
 		void file_write(const fs::path& path, const std::vector<std::uint8_t>& data) const {
 			HANDLE out_handle;
-			bool success = SFileCreateFile(handle, path.string().c_str(), 0, static_cast<DWORD>(data.size()), 0, MPQ_FILE_COMPRESS | MPQ_FILE_REPLACEEXISTING, &out_handle);
+			const std::string open_path = normalize_mpq_path(path);
+			bool success = SFileCreateFile(handle, open_path.c_str(), 0, static_cast<DWORD>(data.size()), 0, MPQ_FILE_COMPRESS | MPQ_FILE_REPLACEEXISTING, &out_handle);
 			if (!success) {
 				std::cout << GetLastError() << " " << path << "\n";
 			}
@@ -172,23 +183,27 @@ namespace mpq {
 		}
 
 		void file_remove(const fs::path& path) const {
-			SFileRemoveFile(handle, path.string().c_str(), 0);
+			const std::string open_path = normalize_mpq_path(path);
+			SFileRemoveFile(handle, open_path.c_str(), 0);
 		}
 
 		bool file_exists(const fs::path& path) const {
 #ifdef WIN32
-			const std::string open_path = path.is_absolute() ? fs::weakly_canonical(path).string() : path.string();
+			std::string open_path = path.is_absolute() ? fs::weakly_canonical(path).string() : path.string();
+			std::replace(open_path.begin(), open_path.end(), '/', '\\');
 			return SFileHasFile(handle, open_path.c_str());
 #else
-			return SFileHasFile(handle, path.string().c_str());
+			const std::string open_path = normalize_mpq_path(path);
+			return SFileHasFile(handle, open_path.c_str());
 #endif
 		}
 
 		void file_add(const fs::path& path, const fs::path& new_path) const {
+			const std::string archive_path = normalize_mpq_path(new_path);
 #ifdef _MSC_VER
-			bool success = SFileAddFileEx(handle, path.wstring().c_str(), new_path.string().c_str(), MPQ_FILE_COMPRESS | MPQ_FILE_REPLACEEXISTING, MPQ_COMPRESSION_ZLIB, MPQ_COMPRESSION_ZLIB);
+			bool success = SFileAddFileEx(handle, path.wstring().c_str(), archive_path.c_str(), MPQ_FILE_COMPRESS | MPQ_FILE_REPLACEEXISTING, MPQ_COMPRESSION_ZLIB, MPQ_COMPRESSION_ZLIB);
 #else
-			bool success = SFileAddFileEx(handle, path.string().c_str(), new_path.string().c_str(), MPQ_FILE_COMPRESS | MPQ_FILE_REPLACEEXISTING, MPQ_COMPRESSION_ZLIB, MPQ_COMPRESSION_ZLIB);
+			bool success = SFileAddFileEx(handle, path.string().c_str(), archive_path.c_str(), MPQ_FILE_COMPRESS | MPQ_FILE_REPLACEEXISTING, MPQ_COMPRESSION_ZLIB, MPQ_COMPRESSION_ZLIB);
 #endif
 			if (!success) {
 				std::cout << "Error adding file: " << GetLastError() << "\n";

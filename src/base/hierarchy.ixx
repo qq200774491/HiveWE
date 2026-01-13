@@ -77,12 +77,14 @@ export class Hierarchy {
 				return;
 			}
 			mpq::MPQ archive;
-			if (archive.open(path)) {
+			if (archive.open(path, mpq::open_read_only)) {
 				mpq_archives.push_back(std::move(archive));
 			}
 		};
 
-		// Classic MPQ load order: patch -> expansion local -> expansion -> base local -> base
+		// Classic MPQ load order: custom/mod -> patch -> expansion local -> expansion -> base local -> base
+		add_mpq(warcraft_directory / "War3Mod.mpq");
+		add_mpq(warcraft_directory / "war3mod.mpq");
 		add_mpq(warcraft_directory / "War3Patch.mpq");
 		add_mpq(warcraft_directory / "war3patch.mpq");
 		add_mpq(warcraft_directory / "War3xLocal.mpq");
