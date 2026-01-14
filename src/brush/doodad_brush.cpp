@@ -584,7 +584,7 @@ void DoodadBrush::render_clipboard() {
 		i.skeleton.update(0.016f);
 		i.position = previous_position;
 
-		map->render_manager.queue_render(*i.mesh, i.skeleton, glm::vec3(1.f), 0);
+		map->render_manager.queue_render(*i.mesh, i.skeleton, i.color, 0);
 	}
 }
 

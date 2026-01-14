@@ -45,6 +45,27 @@ export struct Doodad {
 	std::shared_ptr<PathingTexture> pathing;
 	glm::vec3 color = glm::vec3(1.f);
 
+	static float read_color_component(const slk::SLK& slk, const std::string& field, const std::string& id, const float fallback) {
+		const std::string_view raw = slk.data<std::string_view>(field, id);
+		if (raw.empty() || raw == "-" || raw == "_") {
+			return fallback;
+		}
+		float value = fallback;
+		const auto result = std::from_chars(raw.data(), raw.data() + raw.size(), value);
+		if (result.ec != std::errc()) {
+			return fallback;
+		}
+		return value;
+	}
+
+	static bool is_custom_row(const slk::SLK& slk, const std::string& id) {
+		auto it = slk.shadow_data.find(id);
+		if (it == slk.shadow_data.end()) {
+			return false;
+		}
+		return it->second.contains("oldid");
+	}
+
 	void init(const std::string_view id, const std::shared_ptr<SkinnedMesh> mesh, const Terrain& terrain) {
 		this->id = id;
 		this->skin_id = id;
@@ -74,16 +95,23 @@ export struct Doodad {
 		float max_roll;
 		float max_pitch;
 		if (doodads_slk.row_headers.contains(id)) {
-			color.r = doodads_slk.data<float>("vertr" + std::to_string(variation + 1), id) / 255.f;
-			color.g = doodads_slk.data<float>("vertg" + std::to_string(variation + 1), id) / 255.f;
-			color.b = doodads_slk.data<float>("vertb" + std::to_string(variation + 1), id) / 255.f;
+			const std::string suffix = std::to_string(variation + 1);
+			color.r = read_color_component(doodads_slk, "vertr" + suffix, this->id, 255.f) / 255.f;
+			color.g = read_color_component(doodads_slk, "vertg" + suffix, this->id, 255.f) / 255.f;
+			color.b = read_color_component(doodads_slk, "vertb" + suffix, this->id, 255.f) / 255.f;
+			if (is_custom_row(doodads_slk, this->id) && color.r <= 0.f && color.g <= 0.f && color.b <= 0.f) {
+				color = glm::vec3(1.f);
+			}
 			max_roll = doodads_slk.data<float>("maxroll", id);
 			max_pitch = doodads_slk.data<float>("maxpitch", id);
 			base_scale = doodads_slk.data<float>("defscale", id);
 		} else {
-			color.r = destructibles_slk.data<float>("colorr", id) / 255.f;
-			color.g = destructibles_slk.data<float>("colorg", id) / 255.f;
-			color.b = destructibles_slk.data<float>("colorb", id) / 255.f;
+			color.r = read_color_component(destructibles_slk, "colorr", this->id, 255.f) / 255.f;
+			color.g = read_color_component(destructibles_slk, "colorg", this->id, 255.f) / 255.f;
+			color.b = read_color_component(destructibles_slk, "colorb", this->id, 255.f) / 255.f;
+			if (is_custom_row(destructibles_slk, this->id) && color.r <= 0.f && color.g <= 0.f && color.b <= 0.f) {
+				color = glm::vec3(1.f);
+			}
 			max_roll = destructibles_slk.data<float>("maxroll", id);
 			max_pitch = destructibles_slk.data<float>("maxpitch", id);
 		}
